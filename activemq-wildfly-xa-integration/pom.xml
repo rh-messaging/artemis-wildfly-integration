@@ -33,9 +33,38 @@
    </repositories>
 
    <dependencies>
+      <!--
+      JBoss Tools
+   -->
+      <dependency>
+         <groupId>org.jboss.logging</groupId>
+         <artifactId>jboss-logging-processor</artifactId>
+         <version>1.2.0.Final</version>
+         <scope>provided</scope>
+      </dependency>
+
+      <!--
+          JBoss Logging
+      -->
+      <dependency>
+         <groupId>org.jboss.logging</groupId>
+         <artifactId>jboss-logging</artifactId>
+         <version>3.1.4.GA</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.logmanager</groupId>
+         <artifactId>jboss-logmanager</artifactId>
+         <version>1.5.1.Final</version>
+      </dependency>
       <dependency>
          <groupId>org.apache.activemq</groupId>
          <artifactId>activemq-service-extensions</artifactId>
+         <version>${activemq.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.activemq</groupId>
+         <artifactId>activemq-server</artifactId>
          <version>${activemq.version}</version>
       </dependency>
       <dependency>
@@ -103,6 +132,16 @@
                <artifactId>jboss-logging-spi</artifactId>
             </exclusion>
          </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.security</groupId>
+         <artifactId>jboss-security-spi</artifactId>
+         <version>2.0.3.SP1</version>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.security</groupId>
+         <artifactId>jbosssx</artifactId>
+         <version>2.0.3.SP1</version>
       </dependency>
       <dependency>
          <groupId>org.jboss.integration</groupId>
