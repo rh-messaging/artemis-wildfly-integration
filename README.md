@@ -11,7 +11,7 @@ of ActiveMQ-6.  Therefore you must checkout the ActiveMQ-6 source and build loca
 
 ```bash
   git clone https://github.com/apache/activemq-6
-  cd activemq-6
+  cd activemq-6/tests
   mvn clean install
 ```
 
