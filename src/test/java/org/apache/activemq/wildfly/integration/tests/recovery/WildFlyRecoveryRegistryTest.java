@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.activemq.ra.ActiveMQResourceAdapter;
 import org.apache.activemq.ra.recovery.RecoveryManager;
+import org.apache.activemq.service.extensions.ServiceUtils;
 import org.apache.activemq.service.extensions.xa.recovery.XARecoveryConfig;
 import org.apache.activemq.tests.integration.ra.ActiveMQRAClusteredTestBase;
 import org.apache.activemq.wildfly.integration.fake.DummyTransactionManager;
@@ -35,7 +36,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 /**
  * @author mtaylor
@@ -43,13 +43,22 @@ import javax.naming.NamingException;
 
 public class WildFlyRecoveryRegistryTest extends ActiveMQRAClusteredTestBase
 {
+   @Override
    @Before
-   public void addTM() throws NamingException
+   public void setUp() throws Exception
    {
-       System.setProperty("java.naming.factory.initial", "org.apache.activemq.wildfly.integration.fake.DummyInitialContext");
-       InitialContext initialContext = new InitialContext();
-       initialContext.bind("java:/TransactionManager", new DummyTransactionManager());
+      System.setProperty("java.naming.factory.initial", "org.apache.activemq.wildfly.integration.fake.DummyInitialContext");
+      InitialContext initialContext = new InitialContext();
+      initialContext.bind("java:/TransactionManager", new DummyTransactionManager());
+      super.setUp();
    }
+
+   @After
+   public void resetTransactionManager()
+   {
+      ServiceUtils.setTransactionManager(null);
+   }
+
    @Test
    public void testWildFlyRecoveryDiscoveryIsProperlyRegistered() throws Exception
    {

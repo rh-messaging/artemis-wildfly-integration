@@ -23,6 +23,7 @@ package org.apache.activemq.wildfly.integration.tests;
 
 import org.apache.activemq.service.extensions.ServiceUtils;
 import org.apache.activemq.wildfly.integration.fake.DummyTransactionManager;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -41,5 +42,11 @@ public class TransactionManagerLocatorTest extends Assert
        initialContext.bind("java:/TransactionManager", new DummyTransactionManager());
        assertNotNull(ServiceUtils.getTransactionManager());
        assertTrue(ServiceUtils.getTransactionManager() instanceof DummyTransactionManager);
+   }
+
+   @After
+   public void resetTransactionManager()
+   {
+      ServiceUtils.setTransactionManager(null);
    }
 }
