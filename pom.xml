@@ -2,14 +2,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
-   <groupId>org.apache.activemq.integration.wildfly</groupId>
-   <artifactId>activemq-wildfly-integration</artifactId>
+   <groupId>org.apache.activemq.artemis.integration.wildfly</groupId>
+   <artifactId>artemis-wildfly-integration</artifactId>
    <packaging>jar</packaging>
-   <name>ActiveMQ WildFly Integration</name>
+   <name>ActiveMQ Artemis WildFly Integration</name>
    <version>0.1.0-SNAPSHOT</version>
 
    <properties>
-      <activemq.version>6.0.0-SNAPSHOT</activemq.version>
+      <artemis.version>1.0.0-SNAPSHOT</artemis.version>
    </properties>
 
    <repositories>
@@ -55,39 +55,39 @@
       </dependency>
       <dependency>
          <groupId>org.apache.activemq</groupId>
-         <artifactId>activemq-service-extensions</artifactId>
-         <version>${activemq.version}</version>
+         <artifactId>artemis-service-extensions</artifactId>
+         <version>${artemis.version}</version>
       </dependency>
       <dependency>
          <groupId>org.apache.activemq</groupId>
-         <artifactId>activemq-server</artifactId>
-         <version>${activemq.version}</version>
+         <artifactId>artemis-server</artifactId>
+         <version>${artemis.version}</version>
       </dependency>
       <dependency>
          <groupId>org.apache.activemq</groupId>
-         <artifactId>activemq-server</artifactId>
-         <version>${activemq.version}</version>
+         <artifactId>artemis-server</artifactId>
+         <version>${artemis.version}</version>
          <scope>test</scope>
          <type>test-jar</type>
       </dependency>
       <dependency>
          <groupId>org.apache.activemq.tests</groupId>
          <artifactId>unit-tests</artifactId>
-         <version>${activemq.version}</version>
+         <version>${artemis.version}</version>
          <scope>test</scope>
          <type>test-jar</type>
       </dependency>
       <dependency>
          <groupId>org.apache.activemq</groupId>
-         <artifactId>activemq-core-client</artifactId>
-         <version>${activemq.version}</version>
+         <artifactId>artemis-core-client</artifactId>
+         <version>${artemis.version}</version>
          <scope>test</scope>
          <type>test-jar</type>
       </dependency>
       <dependency>
          <groupId>org.apache.activemq.tests</groupId>
          <artifactId>integration-tests</artifactId>
-         <version>${activemq.version}</version>
+         <version>${artemis.version}</version>
          <type>test-jar</type>
          <scope>test</scope>
       </dependency>
@@ -158,13 +158,13 @@
       <dependency>
          <groupId>org.apache.activemq.tests</groupId>
          <artifactId>integration-tests</artifactId>
-         <version>${activemq.version}</version>
+         <version>${artemis.version}</version>
          <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.apache.activemq.tests</groupId>
          <artifactId>integration-tests</artifactId>
-         <version>${activemq.version}</version>
+         <version>${artemis.version}</version>
          <scope>test</scope>
       </dependency>
    </dependencies>
