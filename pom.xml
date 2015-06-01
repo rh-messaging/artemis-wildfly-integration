@@ -6,11 +6,17 @@
    <artifactId>artemis-wildfly-integration</artifactId>
    <packaging>jar</packaging>
    <name>ActiveMQ Artemis WildFly Integration</name>
-   <version>0.1.0-SNAPSHOT</version>
+   <version>1.0.0-SNAPSHOT</version>
 
    <properties>
-      <artemis.version>1.0.0-SNAPSHOT</artemis.version>
+      <artemis.version>1.0.0</artemis.version>
    </properties>
+
+   <parent>  
+      <groupId>org.jboss</groupId>  
+      <artifactId>jboss-parent</artifactId>  
+      <version>17</version>  
+   </parent>
 
    <repositories>
       <repository>
