@@ -6,7 +6,7 @@
    <artifactId>artemis-wildfly-integration</artifactId>
    <packaging>jar</packaging>
    <name>ActiveMQ Artemis WildFly Integration</name>
-   <version>1.0.0</version>
+   <version>1.0.1</version>
 
    <properties>
       <artemis.version>1.0.0</artemis.version>
