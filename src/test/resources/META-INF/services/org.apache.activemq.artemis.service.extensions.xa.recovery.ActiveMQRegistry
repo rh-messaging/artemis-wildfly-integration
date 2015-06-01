@@ -1,1 +1,1 @@
-org.apache.activemq.artemis.wildfly.integration.recovery.WildFlyActiveMQRegistry
+org.jboss.activemq.artemis.wildfly.integration.recovery.WildFlyActiveMQRegistry
