@@ -85,7 +85,7 @@ public class WildFlyActiveMQXAResourceRecovery extends ActiveMQXAResourceRecover
          String username = parser.getUsername();
          String password = parser.getPassword();
          TransportConfiguration transportConfiguration = new TransportConfiguration(connectorFactoryClassName, connectorParams);
-         xaRecoveryConfigs[i] = new XARecoveryConfig(false, new TransportConfiguration[]{transportConfiguration}, username, password);
+         xaRecoveryConfigs[i] = new XARecoveryConfig(false, new TransportConfiguration[]{transportConfiguration}, username, password, null);
       }
 
 

@@ -17,6 +17,7 @@
 package org.jboss.activemq.artemis.wildfly.integration.recovery;
 
 import javax.transaction.xa.XAResource;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +27,8 @@ import org.apache.activemq.artemis.api.core.Pair;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.service.extensions.xa.recovery.ActiveMQXAResourceWrapper;
 import org.apache.activemq.artemis.service.extensions.xa.recovery.XARecoveryConfig;
+import org.apache.activemq.artemis.utils.VersionLoader;
+import org.jboss.activemq.artemis.wildfly.integration.WildFlyActiveMQXAResourceWrapper;
 import org.jboss.tm.XAResourceRecovery;
 
 /**
@@ -39,6 +42,7 @@ import org.jboss.tm.XAResourceRecovery;
 */
 public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery
 {
+   private static final String PRODUCT_NAME = "ActiveMQ Artemis";
 
    private static final WildFlyActiveMQRecoveryRegistry theInstance = new WildFlyActiveMQRecoveryRegistry();
 
@@ -48,7 +52,7 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery
     * The list by server id and resource adapter wrapper, what will actually be calling recovery.
     * This will be returned by getXAResources
     */
-   private final ConcurrentHashMap<String, ActiveMQXAResourceWrapper> recoveries = new ConcurrentHashMap<String, ActiveMQXAResourceWrapper>();
+   private final ConcurrentHashMap<String, WildFlyActiveMQXAResourceWrapper> recoveries = new ConcurrentHashMap<String, WildFlyActiveMQXAResourceWrapper>();
 
    /**
     * In case of failures, we retry on the next getXAResources
@@ -68,14 +72,14 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery
       {
          checkFailures();
 
-         ActiveMQXAResourceWrapper[] resourceArray = new ActiveMQXAResourceWrapper[recoveries.size()];
+         WildFlyActiveMQXAResourceWrapper[] resourceArray = new WildFlyActiveMQXAResourceWrapper[recoveries.size()];
          resourceArray = recoveries.values().toArray(resourceArray);
 
          if (WildFlyActiveMQLogger.LOGGER.isDebugEnabled())
          {
             WildFlyActiveMQLogger.LOGGER.debug("\n=======================================================================================");
             WildFlyActiveMQLogger.LOGGER.debug("Returning the following list on getXAREsources:");
-            for (Map.Entry<String, ActiveMQXAResourceWrapper> entry : recoveries.entrySet())
+            for (Map.Entry<String, WildFlyActiveMQXAResourceWrapper> entry : recoveries.entrySet())
             {
                WildFlyActiveMQLogger.LOGGER.debug("server-id=" + entry.getKey() + ", value=" + entry.getValue());
             }
@@ -143,9 +147,9 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery
       {
          recoveryDiscovery.stop();
       }
-      for (ActiveMQXAResourceWrapper activeMQXAResourceWrapper : recoveries.values())
+      for (WildFlyActiveMQXAResourceWrapper wrapper : recoveries.values())
       {
-         activeMQXAResourceWrapper.close();
+         ((ActiveMQXAResourceWrapper) wrapper.getResource()).close();
       }
       recoveries.clear();
       configSet.clear();
@@ -165,16 +169,11 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery
       }
    }
 
-   /**
-    * @param nodeID
-    * @param networkConfiguration
-    * @param username
-    * @param password
-    */
    public void nodeUp(String nodeID,
                       Pair<TransportConfiguration, TransportConfiguration> networkConfiguration,
                       String username,
-                      String password)
+                      String password,
+                      Map<String, String> properties)
    {
 
       if (recoveries.get(nodeID) == null)
@@ -183,12 +182,22 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery
          {
             WildFlyActiveMQLogger.LOGGER.debug(nodeID + " being registered towards " + networkConfiguration);
          }
+
          XARecoveryConfig config = new XARecoveryConfig(true,
                                                         extractTransportConfiguration(networkConfiguration),
                                                         username,
-                                                        password);
+                                                        password,
+                                                        properties);
 
-         ActiveMQXAResourceWrapper wrapper = new ActiveMQXAResourceWrapper(config);
+         ActiveMQXAResourceWrapper xaResource = new ActiveMQXAResourceWrapper(config);
+
+         Map<String, Object> xaResourceProperties = new HashMap<String, Object>();
+         xaResourceProperties.put(org.apache.activemq.artemis.service.extensions.xa.ActiveMQXAResourceWrapper.ACTIVEMQ_JNDI_NAME, properties.get(XARecoveryConfig.JNDI_NAME_PROPERTY_KEY));
+         xaResourceProperties.put(org.apache.activemq.artemis.service.extensions.xa.ActiveMQXAResourceWrapper.ACTIVEMQ_NODE_ID, nodeID);
+         xaResourceProperties.put(org.apache.activemq.artemis.service.extensions.xa.ActiveMQXAResourceWrapper.ACTIVEMQ_PRODUCT_NAME, PRODUCT_NAME);
+         xaResourceProperties.put(org.apache.activemq.artemis.service.extensions.xa.ActiveMQXAResourceWrapper.ACTIVEMQ_PRODUCT_VERSION, VersionLoader.getVersion().getFullVersion());
+
+         WildFlyActiveMQXAResourceWrapper wrapper = new WildFlyActiveMQXAResourceWrapper(xaResource, xaResourceProperties);
          recoveries.putIfAbsent(nodeID, wrapper);
       }
    }

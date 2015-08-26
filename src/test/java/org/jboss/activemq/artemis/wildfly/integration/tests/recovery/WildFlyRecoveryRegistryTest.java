@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.naming.InitialContext;
+import javax.transaction.xa.XAResource;
 
 /**
  * @author mtaylor
@@ -97,5 +98,24 @@ public class WildFlyRecoveryRegistryTest extends ActiveMQRAClusteredTestBase
       qResourceAdapter.setConnectionParameters("server-id=1");
 
       assertTrue(WildFlyActiveMQRecoveryRegistry.getInstance().getXAResources().length == 2);
+   }
+
+   @Test
+   public void testXAResourcesAreWrappedAppropriately() throws Exception
+   {
+      ActiveMQResourceAdapter qResourceAdapter = newResourceAdapter();
+      MyBootstrapContext ctx = new MyBootstrapContext();
+      qResourceAdapter.start(ctx);
+
+      qResourceAdapter.setConnectorClassName(INVM_CONNECTOR_FACTORY);
+      qResourceAdapter.setConnectionParameters("server-id=1");
+
+      XAResource[] resources = WildFlyActiveMQRecoveryRegistry.getInstance().getXAResources();
+
+      for (int i = 0; i < resources.length; i++)
+      {
+         assertTrue(resources[i] instanceof org.jboss.jca.core.spi.transaction.xa.XAResourceWrapper);
+         assertTrue(resources[i] instanceof org.jboss.tm.XAResourceWrapper);
+      }
    }
 }
