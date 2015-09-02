@@ -158,10 +158,10 @@ public class WildFlyRecoveryDiscovery implements SessionFailureListener
          if (topologyMember.getLive() != null)
          {
             Pair<TransportConfiguration, TransportConfiguration> connector =
-               new Pair<TransportConfiguration, TransportConfiguration>(topologyMember.getLive(),
-                                                                        topologyMember.getBackup());
+               new Pair<TransportConfiguration, TransportConfiguration>(topologyMember.getLive(), topologyMember.getBackup());
+
             WildFlyActiveMQRecoveryRegistry.getInstance().nodeUp(topologyMember.getNodeId(), connector,
-                                                         config.getUsername(), config.getPassword());
+                                                    config.getUsername(), config.getPassword(), config.getProperties());
          }
       }
 

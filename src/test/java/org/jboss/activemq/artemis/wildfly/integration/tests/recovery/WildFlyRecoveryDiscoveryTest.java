@@ -42,7 +42,7 @@ public class WildFlyRecoveryDiscoveryTest
       String factClass = "org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory";
       TransportConfiguration transportConfig = new TransportConfiguration(factClass, null, "netty");
       XARecoveryConfig config = new XARecoveryConfig(false, new TransportConfiguration[]{transportConfig},
-                                                     null, null);
+                                                     null, null, null);
 
       WildFlyRecoveryDiscovery discovery1 = new WildFlyRecoveryDiscovery(config);
       WildFlyRecoveryDiscovery discovery2 = new WildFlyRecoveryDiscovery(config);
