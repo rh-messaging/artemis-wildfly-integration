@@ -169,7 +169,16 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery
       }
    }
 
-   public void nodeUp(String nodeID,
+   /**
+    * @param listeningConfig the connection factory where we are listening topology updates.
+    * @param nodeID the node id coming from the topology update
+    * @param networkConfiguration the network configuration
+    * @param username the user name
+    * @param password the password
+    * @param properties the properties passed to the configuration
+    */
+   public void nodeUp(XARecoveryConfig listeningConfig,
+                      String nodeID,
                       Pair<TransportConfiguration, TransportConfiguration> networkConfiguration,
                       String username,
                       String password,
@@ -187,7 +196,8 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery
                                                         extractTransportConfiguration(networkConfiguration),
                                                         username,
                                                         password,
-                                                        properties);
+                                                        properties,
+                                                        listeningConfig.getClientProtocolManager());
 
          ActiveMQXAResourceWrapper xaResource = new ActiveMQXAResourceWrapper(config);
 
