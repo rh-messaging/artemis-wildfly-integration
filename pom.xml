@@ -6,10 +6,10 @@
    <artifactId>artemis-wildfly-integration</artifactId>
    <packaging>jar</packaging>
    <name>ActiveMQ Artemis WildFly Integration</name>
-   <version>1.0.2-SNAPSHOT</version>
+   <version>1.0.2</version>
 
    <properties>
-      <artemis.version>1.1.1-SNAPSHOT</artemis.version>
+      <artemis.version>1.1.0.wildfly.007</artemis.version>
    </properties>
 
    <parent>
