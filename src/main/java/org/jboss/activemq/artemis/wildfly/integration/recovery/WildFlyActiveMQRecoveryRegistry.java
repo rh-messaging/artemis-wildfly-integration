@@ -197,7 +197,8 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery
                                                         username,
                                                         password,
                                                         properties,
-                                                        listeningConfig.getClientProtocolManager());
+                                                        listeningConfig.getClientProtocolManager(),
+                                                        listeningConfig.getLocatorConfig());
 
          ActiveMQXAResourceWrapper xaResource = new ActiveMQXAResourceWrapper(config);
 
