@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.net.ssl.SSLContext;
 
 import org.apache.activemq.artemis.api.core.Pair;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
@@ -193,7 +194,7 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery
          }
 
          XARecoveryConfig config = new XARecoveryConfig(true,
-                                                        extractTransportConfiguration(networkConfiguration),
+                                                        extractTransportConfiguration(listeningConfig.getTransportConfig(), networkConfiguration),
                                                         username,
                                                         password,
                                                         properties,
@@ -262,9 +263,18 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery
     * @param networkConfiguration
     * @return
     */
-   private TransportConfiguration[] extractTransportConfiguration(Pair<TransportConfiguration, TransportConfiguration> networkConfiguration)
+   private TransportConfiguration[] extractTransportConfiguration(TransportConfiguration[] configurations, Pair<TransportConfiguration, TransportConfiguration> networkConfiguration)
    {
-      if (networkConfiguration.getB() != null)
+//      SSLContext sslContext = null;
+//      for(int i =0; i < configurations.length && sslContext == null; i++) {
+//         sslContext = configurations[i].getSslContext();
+//      }
+//      if (networkConfiguration.getB() != null)
+//      {
+//         return new TransportConfiguration[]{networkConfiguration.getA().setSslContext(sslContext), networkConfiguration.getB().setSslContext(sslContext)};
+//      }
+//      return new TransportConfiguration[]{networkConfiguration.getA().setSslContext(sslContext)};
+       if (networkConfiguration.getB() != null)
       {
          return new TransportConfiguration[]{networkConfiguration.getA(), networkConfiguration.getB()};
       }

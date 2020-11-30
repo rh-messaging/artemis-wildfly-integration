@@ -96,6 +96,7 @@ public class WildFlyRecoveryRegistryTest extends ActiveMQRAClusteredTestBase
 
       qResourceAdapter.setConnectorClassName(INVM_CONNECTOR_FACTORY);
       qResourceAdapter.setConnectionParameters("server-id=1");
+      Thread.sleep(10);
 
       assertTrue(WildFlyActiveMQRecoveryRegistry.getInstance().getXAResources().length == 2);
    }
@@ -109,13 +110,9 @@ public class WildFlyRecoveryRegistryTest extends ActiveMQRAClusteredTestBase
 
       qResourceAdapter.setConnectorClassName(INVM_CONNECTOR_FACTORY);
       qResourceAdapter.setConnectionParameters("server-id=1");
-
-      XAResource[] resources = WildFlyActiveMQRecoveryRegistry.getInstance().getXAResources();
-
-      for (int i = 0; i < resources.length; i++)
-      {
-         assertTrue(resources[i] instanceof org.jboss.jca.core.spi.transaction.xa.XAResourceWrapper);
-         assertTrue(resources[i] instanceof org.jboss.tm.XAResourceWrapper);
-      }
+       for (XAResource resource : WildFlyActiveMQRecoveryRegistry.getInstance().getXAResources()) {
+           assertTrue(resource instanceof org.jboss.jca.core.spi.transaction.xa.XAResourceWrapper);
+           assertTrue(resource instanceof org.jboss.tm.XAResourceWrapper);
+       }
    }
 }

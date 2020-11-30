@@ -31,6 +31,7 @@ import java.util.Hashtable;
 public class DummyInitialContext implements javax.naming.spi.InitialContextFactory
 {
     static DummyContext context = new DummyContext();
+    @Override
     public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException
     {
         return context;
