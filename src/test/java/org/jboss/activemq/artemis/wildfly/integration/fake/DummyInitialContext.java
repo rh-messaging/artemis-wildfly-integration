@@ -28,11 +28,12 @@ import java.util.Hashtable;
 /**
  * @author <a href="mailto:andy.taylor@jboss.org">Andy Taylor</a>
  */
-public class DummyInitialContext implements javax.naming.spi.InitialContextFactory
-{
+public class DummyInitialContext implements javax.naming.spi.InitialContextFactory {
+
     static DummyContext context = new DummyContext();
-    public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException
-    {
+
+    @Override
+    public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
         return context;
     }
 }

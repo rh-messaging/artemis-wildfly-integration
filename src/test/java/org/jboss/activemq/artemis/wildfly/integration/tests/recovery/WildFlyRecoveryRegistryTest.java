@@ -14,8 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jboss.activemq.artemis.wildfly.integration.tests.recovery;
+
+import static javax.naming.Context.INITIAL_CONTEXT_FACTORY;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -41,81 +42,76 @@ import javax.transaction.xa.XAResource;
 /**
  * @author mtaylor
  */
+public class WildFlyRecoveryRegistryTest extends ActiveMQRAClusteredTestBase {
 
-public class WildFlyRecoveryRegistryTest extends ActiveMQRAClusteredTestBase
-{
-   @Override
-   @Before
-   public void setUp() throws Exception
-   {
-      System.setProperty("java.naming.factory.initial", "org.jboss.activemq.artemis.wildfly.integration.fake.DummyInitialContext");
-      InitialContext initialContext = new InitialContext();
-      initialContext.bind("java:/TransactionManager", new DummyTransactionManager());
-      super.setUp();
-   }
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        System.setProperty(INITIAL_CONTEXT_FACTORY, "org.jboss.activemq.artemis.wildfly.integration.fake.DummyInitialContext");
+        InitialContext initialContext = new InitialContext();
+        initialContext.rebind("java:/TransactionManager", new DummyTransactionManager());
+        super.setUp();
+    }
 
-   @After
-   public void resetTransactionManager()
-   {
-      ServiceUtils.setTransactionManager(null);
-   }
+    @After
+    public void resetTransactionManager() throws Exception {
+        ServiceUtils.setTransactionManager(null);
+        System.clearProperty(INITIAL_CONTEXT_FACTORY);
+    }
 
-   @Test
-   public void testWildFlyRecoveryDiscoveryIsProperlyRegistered() throws Exception
-   {
-      ActiveMQResourceAdapter qResourceAdapter = newResourceAdapter();
-      MyBootstrapContext ctx = new MyBootstrapContext();
-      qResourceAdapter.start(ctx);
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testWildFlyRecoveryDiscoveryIsProperlyRegistered() throws Exception {
+        ActiveMQResourceAdapter qResourceAdapter = newResourceAdapter();
+        MyBootstrapContext ctx = new MyBootstrapContext();
+        qResourceAdapter.start(ctx);
 
-      Field field = WildFlyActiveMQRecoveryRegistry.class.getDeclaredField("configSet");
-      field.setAccessible(true);
-      ConcurrentHashMap<XARecoveryConfig, WildFlyRecoveryDiscovery> map = (ConcurrentHashMap) field.get(WildFlyActiveMQRecoveryRegistry.getInstance());
-      assertTrue(map.size() == 1);
-   }
+        Field field = WildFlyActiveMQRecoveryRegistry.class.getDeclaredField("configSet");
+        field.setAccessible(true);
+        ConcurrentHashMap<XARecoveryConfig, WildFlyRecoveryDiscovery> map = (ConcurrentHashMap) field.get(WildFlyActiveMQRecoveryRegistry.getInstance());
+        assertEquals(1, map.size());
+    }
 
-   @Test
-   public void testRecoveryManagerUsesWildFlyRecoveryRegistry() throws Exception
-   {
-      RecoveryManager recoveryManager = new RecoveryManager();
+    @Test
+    public void testRecoveryManagerUsesWildFlyRecoveryRegistry() throws Exception {
+        RecoveryManager recoveryManager = new RecoveryManager();
 
-      Method method = RecoveryManager.class.getDeclaredMethod("locateRecoveryRegistry");
-      method.setAccessible(true);
-      method.invoke(recoveryManager);
+        Method method = RecoveryManager.class.getDeclaredMethod("locateRecoveryRegistry");
+        method.setAccessible(true);
+        method.invoke(recoveryManager);
 
-      Field field = RecoveryManager.class.getDeclaredField("registry");
-      field.setAccessible(true);
-      assertTrue(field.get(recoveryManager) instanceof WildFlyActiveMQRegistry);
-   }
+        Field field = RecoveryManager.class.getDeclaredField("registry");
+        field.setAccessible(true);
+        assertTrue(field.get(recoveryManager) instanceof WildFlyActiveMQRegistry);
+    }
 
-   @Test
-   public void testXAResourcesAreRegisteredDuringDiscovery() throws Exception
-   {
-      ActiveMQResourceAdapter qResourceAdapter = newResourceAdapter();
-      MyBootstrapContext ctx = new MyBootstrapContext();
-      qResourceAdapter.start(ctx);
+    @Test
+    public void testXAResourcesAreRegisteredDuringDiscovery() throws Exception {
+        ActiveMQResourceAdapter qResourceAdapter = newResourceAdapter();
+        MyBootstrapContext ctx = new MyBootstrapContext();
+        qResourceAdapter.start(ctx);
+        qResourceAdapter.setConnectorClassName(INVM_CONNECTOR_FACTORY);
+        qResourceAdapter.setConnectionParameters("server-id=1");
+        Thread.sleep(10);
 
-      qResourceAdapter.setConnectorClassName(INVM_CONNECTOR_FACTORY);
-      qResourceAdapter.setConnectionParameters("server-id=1");
+        XAResource[] resources = WildFlyActiveMQRecoveryRegistry.getInstance().getXAResources();
+        assertEquals(2, resources.length);
+    }
 
-      assertTrue(WildFlyActiveMQRecoveryRegistry.getInstance().getXAResources().length == 2);
-   }
+    @Test
+    public void testXAResourcesAreWrappedAppropriately() throws Exception {
+        ActiveMQResourceAdapter qResourceAdapter = newResourceAdapter();
+        MyBootstrapContext ctx = new MyBootstrapContext();
+        qResourceAdapter.start(ctx);
+        qResourceAdapter.setConnectorClassName(INVM_CONNECTOR_FACTORY);
+        qResourceAdapter.setConnectionParameters("server-id=1");
+        Thread.sleep(10);
 
-   @Test
-   public void testXAResourcesAreWrappedAppropriately() throws Exception
-   {
-      ActiveMQResourceAdapter qResourceAdapter = newResourceAdapter();
-      MyBootstrapContext ctx = new MyBootstrapContext();
-      qResourceAdapter.start(ctx);
-
-      qResourceAdapter.setConnectorClassName(INVM_CONNECTOR_FACTORY);
-      qResourceAdapter.setConnectionParameters("server-id=1");
-
-      XAResource[] resources = WildFlyActiveMQRecoveryRegistry.getInstance().getXAResources();
-
-      for (int i = 0; i < resources.length; i++)
-      {
-         assertTrue(resources[i] instanceof org.jboss.jca.core.spi.transaction.xa.XAResourceWrapper);
-         assertTrue(resources[i] instanceof org.jboss.tm.XAResourceWrapper);
-      }
-   }
+        XAResource[] resources = WildFlyActiveMQRecoveryRegistry.getInstance().getXAResources();
+        assertEquals(2, resources.length);
+        for (int i = 0; i < resources.length; i++) {
+            assertTrue(resources[i] instanceof org.jboss.jca.core.spi.transaction.xa.XAResourceWrapper);
+            assertTrue(resources[i] instanceof org.jboss.tm.XAResourceWrapper);
+        }
+    }
 }

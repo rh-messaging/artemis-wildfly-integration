@@ -21,6 +21,8 @@
  */
 package org.jboss.activemq.artemis.wildfly.integration.tests;
 
+import static javax.naming.Context.INITIAL_CONTEXT_FACTORY;
+
 import org.apache.activemq.artemis.service.extensions.ServiceUtils;
 import org.jboss.activemq.artemis.wildfly.integration.fake.DummyTransactionManager;
 import org.junit.After;
@@ -32,21 +34,21 @@ import javax.naming.InitialContext;
 /**
  * @author <a href="mailto:andy.taylor@jboss.org">Andy Taylor</a>
  */
-public class TransactionManagerLocatorTest extends Assert
-{
-   @Test
-   public void testServiceUtilsReturnsWildFlyActiveMQXAResourceWrapperFactory() throws Exception
-   {
-       System.setProperty("java.naming.factory.initial", "org.jboss.activemq.artemis.wildfly.integration.fake.DummyInitialContext");
-       InitialContext initialContext = new InitialContext();
-       initialContext.bind("java:/TransactionManager", new DummyTransactionManager());
-       assertNotNull(ServiceUtils.getTransactionManager());
-       assertTrue(ServiceUtils.getTransactionManager() instanceof DummyTransactionManager);
-   }
+public class TransactionManagerLocatorTest extends Assert {
 
-   @After
-   public void resetTransactionManager()
-   {
-      ServiceUtils.setTransactionManager(null);
-   }
+    @Test
+    public void testServiceUtilsReturnsWildFlyActiveMQXAResourceWrapperFactory() throws Exception {
+        System.setProperty(INITIAL_CONTEXT_FACTORY, "org.jboss.activemq.artemis.wildfly.integration.fake.DummyInitialContext");
+        InitialContext initialContext = new InitialContext();
+        initialContext.unbind("java:/TransactionManager");
+        initialContext.bind("java:/TransactionManager", new DummyTransactionManager());
+        assertNotNull(ServiceUtils.getTransactionManager());
+        assertTrue(ServiceUtils.getTransactionManager() instanceof DummyTransactionManager);
+    }
+
+    @After
+    public void resetTransactionManager() {
+        ServiceUtils.setTransactionManager(null);
+        System.clearProperty(INITIAL_CONTEXT_FACTORY);
+    }
 }
