@@ -29,151 +29,152 @@ import java.util.Map;
 /**
  * @author <a href="mailto:andy.taylor@jboss.org">Andy Taylor</a>
  */
-public class DummyContext implements Context
-{
+public class DummyContext implements Context {
+
     Map objects = new HashMap();
-    public Object lookup(Name name) throws NamingException
-    {
+
+    @Override
+    public Object lookup(Name name) throws NamingException {
         return null;
     }
 
-    public Object lookup(String name) throws NamingException
-    {
+    @Override
+    public Object lookup(String name) throws NamingException {
         return objects.get(name);
     }
 
-    public void bind(Name name, Object obj) throws NamingException
-    {
+    @Override
+    public void bind(Name name, Object obj) throws NamingException {
 
     }
 
-    public void bind(String name, Object obj) throws NamingException
-    {
+    @Override
+    public void bind(String name, Object obj) throws NamingException {
         objects.put(name, obj);
     }
 
-    public void rebind(Name name, Object obj) throws NamingException
-    {
+    @Override
+    public void rebind(Name name, Object obj) throws NamingException {
 
     }
 
-    public void rebind(String name, Object obj) throws NamingException
-    {
+    @Override
+    public void rebind(String name, Object obj) throws NamingException {
 
     }
 
-    public void unbind(Name name) throws NamingException
-    {
+    @Override
+    public void unbind(Name name) throws NamingException {
 
     }
 
-    public void unbind(String name) throws NamingException
-    {
+    @Override
+    public void unbind(String name) throws NamingException {
 
     }
 
-    public void rename(Name oldName, Name newName) throws NamingException
-    {
+    @Override
+    public void rename(Name oldName, Name newName) throws NamingException {
 
     }
 
-    public void rename(String oldName, String newName) throws NamingException
-    {
+    @Override
+    public void rename(String oldName, String newName) throws NamingException {
 
     }
 
-    public NamingEnumeration<NameClassPair> list(Name name) throws NamingException
-    {
+    @Override
+    public NamingEnumeration<NameClassPair> list(Name name) throws NamingException {
         return null;
     }
 
-    public NamingEnumeration<NameClassPair> list(String name) throws NamingException
-    {
+    @Override
+    public NamingEnumeration<NameClassPair> list(String name) throws NamingException {
         return null;
     }
 
-    public NamingEnumeration<Binding> listBindings(Name name) throws NamingException
-    {
+    @Override
+    public NamingEnumeration<Binding> listBindings(Name name) throws NamingException {
         return null;
     }
 
-    public NamingEnumeration<Binding> listBindings(String name) throws NamingException
-    {
+    @Override
+    public NamingEnumeration<Binding> listBindings(String name) throws NamingException {
         return null;
     }
 
-    public void destroySubcontext(Name name) throws NamingException
-    {
+    @Override
+    public void destroySubcontext(Name name) throws NamingException {
 
     }
 
-    public void destroySubcontext(String name) throws NamingException
-    {
+    @Override
+    public void destroySubcontext(String name) throws NamingException {
 
     }
 
-    public Context createSubcontext(Name name) throws NamingException
-    {
+    @Override
+    public Context createSubcontext(Name name) throws NamingException {
         return null;
     }
 
-    public Context createSubcontext(String name) throws NamingException
-    {
+    @Override
+    public Context createSubcontext(String name) throws NamingException {
         return null;
     }
 
-    public Object lookupLink(Name name) throws NamingException
-    {
+    @Override
+    public Object lookupLink(Name name) throws NamingException {
         return null;
     }
 
-    public Object lookupLink(String name) throws NamingException
-    {
+    @Override
+    public Object lookupLink(String name) throws NamingException {
         return null;
     }
 
-    public NameParser getNameParser(Name name) throws NamingException
-    {
+    @Override
+    public NameParser getNameParser(Name name) throws NamingException {
         return null;
     }
 
-    public NameParser getNameParser(String name) throws NamingException
-    {
+    @Override
+    public NameParser getNameParser(String name) throws NamingException {
         return null;
     }
 
-    public Name composeName(Name name, Name prefix) throws NamingException
-    {
+    @Override
+    public Name composeName(Name name, Name prefix) throws NamingException {
         return null;
     }
 
-    public String composeName(String name, String prefix) throws NamingException
-    {
+    @Override
+    public String composeName(String name, String prefix) throws NamingException {
         return null;
     }
 
-    public Object addToEnvironment(String propName, Object propVal) throws NamingException
-    {
+    @Override
+    public Object addToEnvironment(String propName, Object propVal) throws NamingException {
         return null;
     }
 
-    public Object removeFromEnvironment(String propName) throws NamingException
-    {
+    @Override
+    public Object removeFromEnvironment(String propName) throws NamingException {
         return null;
     }
 
-    public Hashtable<?, ?> getEnvironment() throws NamingException
-    {
+    @Override
+    public Hashtable<?, ?> getEnvironment() throws NamingException {
         return null;
     }
 
-    public void close() throws NamingException
-    {
-
+    @Override
+    public void close() throws NamingException {
+        this.objects.clear();
     }
 
-    public String getNameInNamespace() throws NamingException
-    {
+    @Override
+    public String getNameInNamespace() throws NamingException {
         return null;
     }
 }

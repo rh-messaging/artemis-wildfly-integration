@@ -16,13 +16,13 @@
    </licenses>
 
    <properties>
-      <artemis.version>1.1.1-SNAPSHOT</artemis.version>
+      <artemis.version>2.16.0</artemis.version>
    </properties>
 
    <parent>
       <groupId>org.jboss</groupId>
       <artifactId>jboss-parent</artifactId>
-      <version>17</version>
+      <version>37</version>
    </parent>
 
    <repositories>
@@ -48,7 +48,7 @@
       <dependency>
          <groupId>org.jboss.logging</groupId>
          <artifactId>jboss-logging-processor</artifactId>
-         <version>1.2.0.Final</version>
+         <version>2.2.1.Final</version>
          <scope>provided</scope>
       </dependency>
 
@@ -65,7 +65,7 @@
       <dependency>
          <groupId>org.jboss.logmanager</groupId>
          <artifactId>jboss-logmanager</artifactId>
-         <version>1.5.1.Final</version>
+         <version>2.1.17.Final</version>
          <scope>provided</scope>
       </dependency>
       <dependency>
@@ -111,13 +111,13 @@
       <dependency>
          <groupId>org.jboss.ironjacamar</groupId>
          <artifactId>ironjacamar-core-api</artifactId>
-         <version>1.2.0.Beta2</version>
+         <version>1.4.25.Final</version>
          <scope>provided</scope>
       </dependency>
       <dependency>
          <groupId>org.jboss</groupId>
          <artifactId>jboss-transaction-spi</artifactId>
-         <version>7.0.0.Final</version>
+         <version>7.6.0.Final</version>
          <exclusions>
             <exclusion>
                <groupId>org.jboss.logging</groupId>
