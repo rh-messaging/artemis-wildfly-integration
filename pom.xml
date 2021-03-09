@@ -16,7 +16,7 @@
    </licenses>
 
    <properties>
-      <artemis.version>2.16.0</artemis.version>
+      <artemis.version>2.17.0</artemis.version>
    </properties>
 
    <parent>
