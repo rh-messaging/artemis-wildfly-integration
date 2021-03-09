@@ -1,12 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>org.jboss.activemq.artemis.integration</groupId>
    <artifactId>artemis-wildfly-integration</artifactId>
    <packaging>jar</packaging>
    <name>ActiveMQ Artemis WildFly Integration</name>
-   <version>1.0.3-SNAPSHOT</version>
+   <version>1.0.3</version>
    <licenses>
       <license>
          <name>Apache License, Version 2.0</name>
@@ -178,4 +177,8 @@
       </plugins>
    </build>
 
+
+  <scm>
+    <tag>1.0.3</tag>
+  </scm>
 </project>
