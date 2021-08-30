@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class DummyContext implements Context {
 
-    Map objects = new HashMap();
+    Map<String, Object> objects = new HashMap<>();
 
     @Override
     public Object lookup(Name name) throws NamingException {
@@ -55,12 +55,12 @@ public class DummyContext implements Context {
 
     @Override
     public void rebind(Name name, Object obj) throws NamingException {
-
+        objects.put(name.toString(), obj);
     }
 
     @Override
     public void rebind(String name, Object obj) throws NamingException {
-
+        objects.put(name, obj);
     }
 
     @Override
