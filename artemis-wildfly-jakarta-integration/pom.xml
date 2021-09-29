@@ -84,16 +84,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.security</groupId>
-            <artifactId>jboss-security-spi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.security</groupId>
-            <artifactId>jbosssx</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.jbossts.jts</groupId>
             <artifactId>jbossjts-jacorb</artifactId>
             <scope>provided</scope>
