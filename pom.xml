@@ -21,26 +21,10 @@
     </licenses>
 
     <properties>
-        <artemis.version>2.18.0</artemis.version>
+        <artemis.version>2.18.0-</artemis.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
     </properties>
 
-
-    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>interval:10080</updatePolicy>
-            </releases>
-            <id>jboss.release</id>
-            <name>JBoss releases</name>
-            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-        </repository>
-    </repositories>
 
     <modules>
         <module>artemis-wildfly-integration</module>
@@ -134,16 +118,6 @@
                         <artifactId>jboss-logging-spi</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.security</groupId>
-                <artifactId>jboss-security-spi</artifactId>
-                <version>2.0.3.SP1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.security</groupId>
-                <artifactId>jbosssx</artifactId>
-                <version>2.0.3.SP1</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.jbossts.jts</groupId>
