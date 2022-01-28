@@ -21,6 +21,8 @@
  */
 package org.jboss.activemq.artemis.wildfly;
 
+import static org.apache.activemq.artemis.spi.core.remoting.ssl.SSLContextFactory.log;
+
 import javax.security.auth.Subject;
 
 import org.jboss.logging.BasicLogger;
@@ -32,14 +34,14 @@ import org.jboss.logging.annotations.MessageLogger;
 
 /**
  * @author <a href="mailto:andy.taylor@jboss.org">Andy Taylor</a>
- *         3/15/12
+ * 3/15/12
  *
  * Logger Code 13
  *
  * each message id must be 6 digits long starting with 13, the 3rd digit donates the level so
  *
- * INF0  1
- * WARN  2
+ * INF0 1
+ * WARN 2
  * DEBUG 3
  * ERROR 4
  * TRACE 5
@@ -48,20 +50,20 @@ import org.jboss.logging.annotations.MessageLogger;
  * so an INFO message would be 131000 to 131999
  */
 @MessageLogger(projectCode = "AMQ")
-public interface ActiveMQJBossLogger extends BasicLogger
-{
-   /**
-    * The jboss integration logger.
-    */
-   ActiveMQJBossLogger LOGGER = Logger.getMessageLogger(ActiveMQJBossLogger.class, ActiveMQJBossLogger.class.getPackage().getName());
+public interface ActiveMQJBossLogger extends BasicLogger {
 
-   @LogMessage(level = Logger.Level.INFO)
-   @Message(id = 131001, value = "Security Context Setting Subject = {0}",
-            format = Message.Format.MESSAGE_FORMAT)
-   void settingSecuritySubject(Subject subject);
+    /**
+     * The jboss integration logger.
+     */
+    ActiveMQJBossLogger LOGGER = Logger.getMessageLogger(ActiveMQJBossLogger.class, ActiveMQJBossLogger.class.getPackage().getName());
 
-   @LogMessage(level = Logger.Level.WARN)
-   @Message(id = 132001, value = "An error happened while setting the context",
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 131001, value = "Security Context Setting Subject = {0}",
             format = Message.Format.MESSAGE_FORMAT)
-   void errorSettingSecurityContext(@Cause Throwable Throwable);
+    void settingSecuritySubject(Subject subject);
+
+    @LogMessage(level = Logger.Level.WARN)
+    @Message(id = 132001, value = "An error happened while setting the context",
+            format = Message.Format.MESSAGE_FORMAT)
+    void errorSettingSecurityContext(@Cause Throwable Throwable);
 }

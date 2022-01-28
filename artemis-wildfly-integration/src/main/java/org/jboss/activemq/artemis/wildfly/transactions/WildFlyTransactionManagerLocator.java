@@ -28,10 +28,9 @@ import org.jboss.tm.TransactionManagerLocator;
 /**
  * @author <a href="mailto:andy.taylor@jboss.org">Andy Taylor</a>
  */
-public class WildFlyTransactionManagerLocator implements org.apache.activemq.artemis.service.extensions.transactions.TransactionManagerLocator
-{
-   public TransactionManager getTransactionManager()
-   {
-      return TransactionManagerLocator.locateTransactionManager();
-   }
+public class WildFlyTransactionManagerLocator implements org.apache.activemq.artemis.service.extensions.transactions.TransactionManagerLocator {
+
+    public TransactionManager getTransactionManager() {
+        return TransactionManagerLocator.locateTransactionManager();
+    }
 }

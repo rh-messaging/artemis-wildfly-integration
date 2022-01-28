@@ -28,6 +28,7 @@ import org.apache.activemq.artemis.utils.ConfigurationHelper;
 
 /**
  * Implementation of the SSLContextFactory enabling WildFly to register and unregister SSLContext that it created.
+ *
  * @author Emmanuel Hugonnet (c) 2019 Red Hat, Inc.
  */
 public class WildFlySSLContextFactory extends DefaultSSLContextFactory {
@@ -36,6 +37,7 @@ public class WildFlySSLContextFactory extends DefaultSSLContextFactory {
 
     /**
      * Register a WildFly SSLContext.
+     *
      * @param name the SSlContext name.
      * @param context the SSlContext.
      */
@@ -46,6 +48,7 @@ public class WildFlySSLContextFactory extends DefaultSSLContextFactory {
 
     /**
      * Unregister a WildFly SSLContext.
+     *
      * @param name the SSlContext name.
      */
     public static void unregisterSSLContext(String name) {
