@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.activemq.artemis.api.core.ActiveMQException;
 import org.apache.activemq.artemis.api.core.ActiveMQExceptionType;
-import org.apache.activemq.artemis.api.core.Pair;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.api.core.client.ClusterTopologyListener;
 import org.apache.activemq.artemis.api.core.client.ServerLocator;
@@ -129,14 +128,22 @@ public class WildFlyRecoveryDiscovery implements SessionFailureListener {
 
         @Override
         public void nodeUP(TopologyMember topologyMember, boolean last) {
-            // There is a case where the backup announce itself,
-            // we need to ignore a case where getLive is null
-            if (topologyMember.getLive() != null) {
-                Pair<TransportConfiguration, TransportConfiguration> connector
-                        = new Pair<TransportConfiguration, TransportConfiguration>(topologyMember.getLive(), topologyMember.getBackup());
-
-                WildFlyActiveMQRecoveryRegistry.getInstance().nodeUp(config, topologyMember.getNodeId(), connector,
-                        config.getUsername(), config.getPassword(), config.getProperties());
+            if (!config.getLocatorConfig().useTopologyForLoadBalancing) {
+                WildFlyActiveMQRecoveryRegistry.getInstance().nodeUp(config, topologyMember.getNodeId(),
+                        config.getTransportConfig(), config.getUsername(), config.getPassword(), config.getProperties());
+            } else {
+                // There is a case where the backup announce itself,
+                // we need to ignore a case where getLive is null
+                if (topologyMember.getLive() != null) {
+                    TransportConfiguration[] connector;
+                    if (topologyMember.getBackup() != null) {
+                        connector = new TransportConfiguration[]{topologyMember.getLive(), topologyMember.getLive()};
+                    } else {
+                        connector = new TransportConfiguration[]{topologyMember.getLive()};
+                    }
+                    WildFlyActiveMQRecoveryRegistry.getInstance().nodeUp(config, topologyMember.getNodeId(), connector,
+                            config.getUsername(), config.getPassword(), config.getProperties());
+                }
             }
         }
 

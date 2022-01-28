@@ -16,6 +16,7 @@
  */
 package org.jboss.activemq.artemis.wildfly.integration.recovery;
 
+import java.util.Arrays;
 import javax.transaction.xa.XAResource;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.activemq.artemis.api.core.Pair;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.service.extensions.xa.recovery.ActiveMQXAResourceWrapper;
 import org.apache.activemq.artemis.service.extensions.xa.recovery.XARecoveryConfig;
@@ -167,18 +167,18 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
      */
     public void nodeUp(XARecoveryConfig listeningConfig,
             String nodeID,
-            Pair<TransportConfiguration, TransportConfiguration> networkConfiguration,
+            TransportConfiguration[] networkConfiguration,
             String username,
             String password,
             Map<String, String> properties) {
 
         if (recoveries.get(nodeID) == null) {
             if (WildFlyActiveMQLogger.LOGGER.isDebugEnabled()) {
-                WildFlyActiveMQLogger.LOGGER.debug(nodeID + " being registered towards " + networkConfiguration);
+                WildFlyActiveMQLogger.LOGGER.debug(nodeID + " being registered towards " + Arrays.toString(networkConfiguration));
             }
 
             XARecoveryConfig config = new XARecoveryConfig(true,
-                    extractTransportConfiguration(networkConfiguration),
+                    networkConfiguration,
                     username,
                     password,
                     properties,
@@ -232,17 +232,6 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
 
             t.start();
         }
-    }
-
-    /**
-     * @param networkConfiguration
-     * @return
-     */
-    private TransportConfiguration[] extractTransportConfiguration(Pair<TransportConfiguration, TransportConfiguration> networkConfiguration) {
-        if (networkConfiguration.getB() != null) {
-            return new TransportConfiguration[]{networkConfiguration.getA(), networkConfiguration.getB()};
-        }
-        return new TransportConfiguration[]{networkConfiguration.getA()};
     }
 
 }
