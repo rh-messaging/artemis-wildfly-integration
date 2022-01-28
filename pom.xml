@@ -21,10 +21,10 @@
     </licenses>
 
     <properties>
-        <artemis.version>2.18.0</artemis.version>
+        <artemis.version>2.19.0</artemis.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
+        <version.compiler.plugin>3.8.1</version.compiler.plugin>
     </properties>
-
 
     <modules>
         <module>artemis-wildfly-integration</module>
@@ -187,4 +187,18 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+ 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
