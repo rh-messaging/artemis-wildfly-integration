@@ -51,62 +51,53 @@ import org.apache.activemq.artemis.service.extensions.xa.recovery.XARecoveryConf
  * @author <a href="mailto:andy.taylor@jboss.org">Andy Taylor</a>
  * @version <tt>$Revision: 1.1 $</tt>
  */
-public class WildFlyActiveMQXAResourceRecovery extends ActiveMQXAResourceRecovery implements XAResourceRecovery
-{
-   private final boolean trace = ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled();
+public class WildFlyActiveMQXAResourceRecovery extends ActiveMQXAResourceRecovery implements XAResourceRecovery {
 
-   private boolean hasMore;
+    private final boolean trace = ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled();
 
-   private ActiveMQXAResourceWrapper res;
+    private boolean hasMore;
 
-   public WildFlyActiveMQXAResourceRecovery()
-   {
-      if (trace)
-      {
-         ActiveMQXARecoveryLogger.LOGGER.trace("Constructing ActiveMQXAResourceRecovery");
-      }
-   }
+    private ActiveMQXAResourceWrapper res;
 
-   public boolean initialise(final String config)
-   {
-      if (ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled())
-      {
-         ActiveMQXARecoveryLogger.LOGGER.trace(this + " intialise: " + config);
-      }
+    public WildFlyActiveMQXAResourceRecovery() {
+        if (trace) {
+            ActiveMQXARecoveryLogger.LOGGER.trace("Constructing ActiveMQXAResourceRecovery");
+        }
+    }
 
-      String[] configs = config.split(";");
-      XARecoveryConfig[] xaRecoveryConfigs = new XARecoveryConfig[configs.length];
-      for (int i = 0, configsLength = configs.length; i < configsLength; i++)
-      {
-         String s = configs[i];
-         ConfigParser parser = new ConfigParser(s);
-         String connectorFactoryClassName = parser.getConnectorFactoryClassName();
-         Map<String, Object> connectorParams = parser.getConnectorParameters();
-         String username = parser.getUsername();
-         String password = parser.getPassword();
-         TransportConfiguration transportConfiguration = new TransportConfiguration(connectorFactoryClassName, connectorParams);
-         xaRecoveryConfigs[i] = new XARecoveryConfig(false, new TransportConfiguration[]{transportConfiguration}, username, password, null);
-      }
+    public boolean initialise(final String config) {
+        if (ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled()) {
+            ActiveMQXARecoveryLogger.LOGGER.trace(this + " intialise: " + config);
+        }
 
+        String[] configs = config.split(";");
+        XARecoveryConfig[] xaRecoveryConfigs = new XARecoveryConfig[configs.length];
+        for (int i = 0, configsLength = configs.length; i < configsLength; i++) {
+            String s = configs[i];
+            ConfigParser parser = new ConfigParser(s);
+            String connectorFactoryClassName = parser.getConnectorFactoryClassName();
+            Map<String, Object> connectorParams = parser.getConnectorParameters();
+            String username = parser.getUsername();
+            String password = parser.getPassword();
+            TransportConfiguration transportConfiguration = new TransportConfiguration(connectorFactoryClassName, connectorParams);
+            xaRecoveryConfigs[i] = new XARecoveryConfig(false, new TransportConfiguration[]{transportConfiguration}, username, password, null);
+        }
 
-      res = new ActiveMQXAResourceWrapper(xaRecoveryConfigs);
+        res = new ActiveMQXAResourceWrapper(xaRecoveryConfigs);
 
-      if (ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled())
-      {
-         ActiveMQXARecoveryLogger.LOGGER.trace(this + " initialised");
-      }
+        if (ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled()) {
+            ActiveMQXARecoveryLogger.LOGGER.trace(this + " initialised");
+        }
 
-      return true;
-   }
+        return true;
+    }
 
-   public boolean hasMoreResources()
-   {
-      if (ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled())
-      {
-         ActiveMQXARecoveryLogger.LOGGER.trace(this + " hasMoreResources");
-      }
+    public boolean hasMoreResources() {
+        if (ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled()) {
+            ActiveMQXARecoveryLogger.LOGGER.trace(this + " hasMoreResources");
+        }
 
-      /*
+        /*
        * The way hasMoreResources is supposed to work is as follows:
        * For each "sweep" the recovery manager will call hasMoreResources, then if it returns
        * true it will call getXAResource.
@@ -118,117 +109,97 @@ public class WildFlyActiveMQXAResourceRecovery extends ActiveMQXAResourceRecover
        * hasMoreResources should basically alternate between true and false.
        *
        *
-       */
+         */
+        hasMore = !hasMore;
 
-      hasMore = !hasMore;
+        return hasMore;
+    }
 
-      return hasMore;
-   }
+    public XAResource getXAResource() {
+        if (ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled()) {
+            ActiveMQXARecoveryLogger.LOGGER.trace(this + " getXAResource");
+        }
 
-   public XAResource getXAResource()
-   {
-      if (ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled())
-      {
-         ActiveMQXARecoveryLogger.LOGGER.trace(this + " getXAResource");
-      }
+        return res;
+    }
 
-      return res;
-   }
+    public XAResource[] getXAResources() {
+        return new XAResource[]{res};
+    }
 
-   public XAResource[] getXAResources()
-   {
-      return new XAResource[]{res};
-   }
+    @Override
+    protected void finalize() {
+        res.close();
+    }
 
-   @Override
-   protected void finalize()
-   {
-      res.close();
-   }
+    public static class ConfigParser {
 
-   public static class ConfigParser
-   {
-      private final String connectorFactoryClassName;
+        private final String connectorFactoryClassName;
 
-      private final Map<String, Object> connectorParameters;
+        private final Map<String, Object> connectorParameters;
 
-      private String username;
+        private String username;
 
-      private String password;
+        private String password;
 
-      public ConfigParser(final String config)
-      {
-         if (config == null || config.length() == 0)
-         {
-            throw new IllegalArgumentException("Must specify provider connector factory class name in config");
-         }
-
-         String[] strings = config.split(",");
-
-         // First (mandatory) param is the connector factory class name
-         if (strings.length < 1)
-         {
-            throw new IllegalArgumentException("Must specify provider connector factory class name in config");
-         }
-
-         connectorFactoryClassName = strings[0].trim();
-
-         // Next two (optional) parameters are the username and password to use for creating the session for recovery
-
-         if (strings.length >= 2)
-         {
-
-            username = strings[1].trim();
-            if (username.length() == 0)
-            {
-               username = null;
+        public ConfigParser(final String config) {
+            if (config == null || config.length() == 0) {
+                throw new IllegalArgumentException("Must specify provider connector factory class name in config");
             }
 
-            if (strings.length == 2)
-            {
-               throw new IllegalArgumentException("If username is specified, password must be specified too");
+            String[] strings = config.split(",");
+
+            // First (mandatory) param is the connector factory class name
+            if (strings.length < 1) {
+                throw new IllegalArgumentException("Must specify provider connector factory class name in config");
             }
 
-            password = strings[2].trim();
-            if (password.length() == 0)
-            {
-               password = null;
+            connectorFactoryClassName = strings[0].trim();
+
+            // Next two (optional) parameters are the username and password to use for creating the session for recovery
+            if (strings.length >= 2) {
+
+                username = strings[1].trim();
+                if (username.length() == 0) {
+                    username = null;
+                }
+
+                if (strings.length == 2) {
+                    throw new IllegalArgumentException("If username is specified, password must be specified too");
+                }
+
+                password = strings[2].trim();
+                if (password.length() == 0) {
+                    password = null;
+                }
             }
-         }
 
-         // other tokens are for connector configurations
-         connectorParameters = new HashMap<String, Object>();
-         if (strings.length >= 3)
-         {
-            for (int i = 3; i < strings.length; i++)
-            {
-               String[] str = strings[i].split("=");
-               if (str.length == 2)
-               {
-                  connectorParameters.put(str[0].trim(), str[1].trim());
-               }
+            // other tokens are for connector configurations
+            connectorParameters = new HashMap<String, Object>();
+            if (strings.length >= 3) {
+                for (int i = 3; i < strings.length; i++) {
+                    String[] str = strings[i].split("=");
+                    if (str.length == 2) {
+                        connectorParameters.put(str[0].trim(), str[1].trim());
+                    }
+                }
             }
-         }
-      }
+        }
 
-      public String getConnectorFactoryClassName()
-      {
-         return connectorFactoryClassName;
-      }
+        public String getConnectorFactoryClassName() {
+            return connectorFactoryClassName;
+        }
 
-      public Map<String, Object> getConnectorParameters()
-      {
-         return connectorParameters;
-      }
+        public Map<String, Object> getConnectorParameters() {
+            return connectorParameters;
+        }
 
-      public String getUsername()
-      {
-         return username;
-      }
+        public String getUsername() {
+            return username;
+        }
 
-      public String getPassword()
-      {
-         return password;
-      }
-   }
+        public String getPassword() {
+            return password;
+        }
+    }
 }

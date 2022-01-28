@@ -26,207 +26,170 @@ import org.apache.activemq.artemis.core.client.impl.ClientSessionFactoryInternal
 import org.apache.activemq.artemis.service.extensions.xa.recovery.XARecoveryConfig;
 
 /**
- * <p>This class will have a simple Connection Factory and will listen
+ * <p>
+ * This class will have a simple Connection Factory and will listen
  * for topology updates. </p>
- * <p>This Discovery is instantiated by {@link WildFlyActiveMQRecoveryRegistry}
+ * <p>
+ * This Discovery is instantiated by {@link WildFlyActiveMQRecoveryRegistry}
  *
  * @author clebertsuconic
  */
-public class WildFlyRecoveryDiscovery implements SessionFailureListener
-{
+public class WildFlyRecoveryDiscovery implements SessionFailureListener {
 
-   private ServerLocator locator;
-   private ClientSessionFactoryInternal sessionFactory;
-   private final XARecoveryConfig config;
-   private final AtomicInteger usage = new AtomicInteger(0);
-   private boolean started = false;
+    private ServerLocator locator;
+    private ClientSessionFactoryInternal sessionFactory;
+    private final XARecoveryConfig config;
+    private final AtomicInteger usage = new AtomicInteger(0);
+    private boolean started = false;
 
+    public WildFlyRecoveryDiscovery(XARecoveryConfig config) {
+        this.config = config;
+    }
 
-   public WildFlyRecoveryDiscovery(XARecoveryConfig config)
-   {
-      this.config = config;
-   }
+    public synchronized void start(boolean retry) {
+        if (!started) {
+            WildFlyActiveMQLogger.LOGGER.debug("Starting RecoveryDiscovery on " + config);
+            started = true;
 
-   public synchronized void start(boolean retry)
-   {
-      if (!started)
-      {
-         WildFlyActiveMQLogger.LOGGER.debug("Starting RecoveryDiscovery on " + config);
-         started = true;
+            locator = config.createServerLocator();
+            locator.disableFinalizeCheck();
+            locator.addClusterTopologyListener(new InternalListener(config));
+            try {
+                sessionFactory = (ClientSessionFactoryInternal) locator.createSessionFactory();
+                // We are using the SessionFactoryInternal here directly as we don't have information to connect with an user and password
+                // on the session as all we want here is to get the topology
+                // in case of failure we will retry
+                sessionFactory.addFailureListener(this);
 
-         locator = config.createServerLocator();
-         locator.disableFinalizeCheck();
-         locator.addClusterTopologyListener(new InternalListener(config));
-         try
-         {
-            sessionFactory = (ClientSessionFactoryInternal) locator.createSessionFactory();
-            // We are using the SessionFactoryInternal here directly as we don't have information to connect with an user and password
-            // on the session as all we want here is to get the topology
-            // in case of failure we will retry
-            sessionFactory.addFailureListener(this);
-
-            WildFlyActiveMQLogger.LOGGER.debug("RecoveryDiscovery started fine on " + config);
-         }
-         catch (Exception startupError)
-         {
-            if (!retry)
-            {
-               WildFlyActiveMQLogger.LOGGER.xaRecoveryStartError(config);
+                WildFlyActiveMQLogger.LOGGER.debug("RecoveryDiscovery started fine on " + config);
+            } catch (Exception startupError) {
+                if (!retry) {
+                    WildFlyActiveMQLogger.LOGGER.xaRecoveryStartError(config);
+                }
+                stop();
+                WildFlyActiveMQRecoveryRegistry.getInstance().failedDiscovery(this);
             }
-            stop();
-            WildFlyActiveMQRecoveryRegistry.getInstance().failedDiscovery(this);
-         }
 
-      }
-   }
+        }
+    }
 
-   public synchronized void stop()
-   {
-      internalStop();
-   }
+    public synchronized void stop() {
+        internalStop();
+    }
 
-   /**
-    * we may have several connection factories referencing the same connection recovery entry.
-    * Because of that we need to make a count of the number of the instances that are referencing it,
-    * so we will remove it as soon as we are done
-    */
-   public int incrementUsage()
-   {
-      return usage.decrementAndGet();
-   }
+    /**
+     * we may have several connection factories referencing the same connection recovery entry.
+     * Because of that we need to make a count of the number of the instances that are referencing it,
+     * so we will remove it as soon as we are done
+     */
+    public int incrementUsage() {
+        return usage.decrementAndGet();
+    }
 
-   public int decrementUsage()
-   {
-      return usage.incrementAndGet();
-   }
+    public int decrementUsage() {
+        return usage.incrementAndGet();
+    }
 
+    @Override
+    protected void finalize() {
+        // I don't think it's a good thing to synchronize a method on a finalize,
+        // hence the internalStop (no sync) call here
+        internalStop();
+    }
 
-   @Override
-   protected void finalize()
-   {
-      // I don't think it's a good thing to synchronize a method on a finalize,
-      // hence the internalStop (no sync) call here
-      internalStop();
-   }
-
-   protected void internalStop()
-   {
-      if (started)
-      {
-         started = false;
-         try
-         {
-            if (sessionFactory != null)
-            {
-               sessionFactory.close();
+    protected void internalStop() {
+        if (started) {
+            started = false;
+            try {
+                if (sessionFactory != null) {
+                    sessionFactory.close();
+                }
+            } catch (Exception ignored) {
+                WildFlyActiveMQLogger.LOGGER.debug(ignored, ignored);
             }
-         }
-         catch (Exception ignored)
-         {
-            WildFlyActiveMQLogger.LOGGER.debug(ignored, ignored);
-         }
 
-         try
-         {
-            locator.close();
-         }
-         catch (Exception ignored)
-         {
-            WildFlyActiveMQLogger.LOGGER.debug(ignored, ignored);
-         }
+            try {
+                locator.close();
+            } catch (Exception ignored) {
+                WildFlyActiveMQLogger.LOGGER.debug(ignored, ignored);
+            }
 
-         sessionFactory = null;
-         locator = null;
-      }
-   }
+            sessionFactory = null;
+            locator = null;
+        }
+    }
 
+    static final class InternalListener implements ClusterTopologyListener {
 
-   static final class InternalListener implements ClusterTopologyListener
-   {
-      private final XARecoveryConfig config;
+        private final XARecoveryConfig config;
 
-      public InternalListener(final XARecoveryConfig config)
-      {
-         this.config = config;
-      }
+        public InternalListener(final XARecoveryConfig config) {
+            this.config = config;
+        }
 
-      @Override
-      public void nodeUP(TopologyMember topologyMember, boolean last)
-      {
-         // There is a case where the backup announce itself,
-         // we need to ignore a case where getLive is null
-         if (topologyMember.getLive() != null)
-         {
-            Pair<TransportConfiguration, TransportConfiguration> connector =
-               new Pair<TransportConfiguration, TransportConfiguration>(topologyMember.getLive(), topologyMember.getBackup());
+        @Override
+        public void nodeUP(TopologyMember topologyMember, boolean last) {
+            // There is a case where the backup announce itself,
+            // we need to ignore a case where getLive is null
+            if (topologyMember.getLive() != null) {
+                Pair<TransportConfiguration, TransportConfiguration> connector
+                        = new Pair<TransportConfiguration, TransportConfiguration>(topologyMember.getLive(), topologyMember.getBackup());
 
-            WildFlyActiveMQRecoveryRegistry.getInstance().nodeUp(config, topologyMember.getNodeId(), connector,
-                                                    config.getUsername(), config.getPassword(), config.getProperties());
-         }
-      }
+                WildFlyActiveMQRecoveryRegistry.getInstance().nodeUp(config, topologyMember.getNodeId(), connector,
+                        config.getUsername(), config.getPassword(), config.getProperties());
+            }
+        }
 
-      @Override
-      public void nodeDown(long eventUID, String nodeID)
-      {
-         // I'm not putting any node down, since it may have previous transactions hanging, however at some point we may
-         //change it have some sort of timeout for removal
-      }
+        @Override
+        public void nodeDown(long eventUID, String nodeID) {
+            // I'm not putting any node down, since it may have previous transactions hanging, however at some point we may
+            //change it have some sort of timeout for removal
+        }
 
-   }
+    }
 
+    @Override
+    public void connectionFailed(ActiveMQException exception, boolean failedOver) {
+        if (exception.getType() == ActiveMQExceptionType.DISCONNECTED) {
+            WildFlyActiveMQLogger.LOGGER.warn("being disconnected for server shutdown", exception);
+        } else {
+            WildFlyActiveMQLogger.LOGGER.warn("Notified of connection failure in xa discovery, we will retry on the next recovery",
+                    exception);
+        }
+        internalStop();
+        WildFlyActiveMQRecoveryRegistry.getInstance().failedDiscovery(this);
+    }
 
-   @Override
-   public void connectionFailed(ActiveMQException exception, boolean failedOver)
-   {
-      if (exception.getType() == ActiveMQExceptionType.DISCONNECTED)
-      {
-         WildFlyActiveMQLogger.LOGGER.warn("being disconnected for server shutdown", exception);
-      }
-      else
-      {
-         WildFlyActiveMQLogger.LOGGER.warn("Notified of connection failure in xa discovery, we will retry on the next recovery",
-                                            exception);
-      }
-      internalStop();
-      WildFlyActiveMQRecoveryRegistry.getInstance().failedDiscovery(this);
-   }
+    @Override
+    public void connectionFailed(final ActiveMQException me, boolean failedOver, String scaleDownTargetNodeID) {
+        connectionFailed(me, failedOver);
+    }
 
-   @Override
-   public void connectionFailed(final ActiveMQException me, boolean failedOver, String scaleDownTargetNodeID)
-   {
-      connectionFailed(me, failedOver);
-   }
+    @Override
+    public void beforeReconnect(ActiveMQException exception) {
+    }
 
-   @Override
-   public void beforeReconnect(ActiveMQException exception)
-   {
-   }
-
-   /* (non-Javadoc)
+    /* (non-Javadoc)
     * @see java.lang.Object#toString()
-    */
-   @Override
-   public String toString()
-   {
-      return "RecoveryDiscovery [config=" + config + ", started=" + started + "]";
-   }
+     */
+    @Override
+    public String toString() {
+        return "RecoveryDiscovery [config=" + config + ", started=" + started + "]";
+    }
 
-   @Override
-   public int hashCode()
-   {
-      return config.hashCode();
-   }
+    @Override
+    public int hashCode() {
+        return config.hashCode();
+    }
 
-   @Override
-   public boolean equals(Object o)
-   {
-      if (o == null || (!(o instanceof WildFlyRecoveryDiscovery)))
-      {
-         return false;
-      }
-      WildFlyRecoveryDiscovery discovery = (WildFlyRecoveryDiscovery) o;
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || (!(o instanceof WildFlyRecoveryDiscovery))) {
+            return false;
+        }
+        WildFlyRecoveryDiscovery discovery = (WildFlyRecoveryDiscovery) o;
 
-      return config.equals(discovery.config);
-   }
+        return config.equals(discovery.config);
+    }
 
 }

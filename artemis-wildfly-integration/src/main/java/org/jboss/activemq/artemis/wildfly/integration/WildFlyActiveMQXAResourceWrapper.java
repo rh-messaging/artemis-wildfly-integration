@@ -10,7 +10,6 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-
 package org.jboss.activemq.artemis.wildfly.integration;
 
 import javax.transaction.xa.XAResource;
@@ -21,11 +20,9 @@ import org.apache.activemq.artemis.service.extensions.xa.ActiveMQXAResourceWrapp
 /**
  * @author <a href="mailto:mtaylor@redhat.com">Martyn Taylor</a>
  */
+public class WildFlyActiveMQXAResourceWrapper extends ActiveMQXAResourceWrapperImpl implements org.jboss.jca.core.spi.transaction.xa.XAResourceWrapper, org.jboss.tm.XAResourceWrapper {
 
-public class WildFlyActiveMQXAResourceWrapper extends ActiveMQXAResourceWrapperImpl implements org.jboss.jca.core.spi.transaction.xa.XAResourceWrapper, org.jboss.tm.XAResourceWrapper
-{
-   public WildFlyActiveMQXAResourceWrapper(XAResource xaResource, Map<String, Object> properties)
-   {
-      super(xaResource, properties);
-   }
+    public WildFlyActiveMQXAResourceWrapper(XAResource xaResource, Map<String, Object> properties) {
+        super(xaResource, properties);
+    }
 }
