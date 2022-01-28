@@ -4,13 +4,13 @@
    <parent>
       <groupId>org.jboss.activemq.artemis.integration</groupId>
       <artifactId>artemis-wildfly-integration-parent</artifactId>
-      <version>1.0.6-SNAPSHOT</version>
+      <version>1.0.6</version>
    </parent>
 
    <artifactId>artemis-wildfly-integration</artifactId>
    <packaging>jar</packaging>
    <name>ActiveMQ Artemis WildFly Integration</name>
-   <version>1.0.6-SNAPSHOT</version>
+   <version>1.0.6</version>
 
    <dependencies>
       <!--
