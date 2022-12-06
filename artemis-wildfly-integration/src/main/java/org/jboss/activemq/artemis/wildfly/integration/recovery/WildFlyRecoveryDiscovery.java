@@ -137,7 +137,7 @@ public class WildFlyRecoveryDiscovery implements SessionFailureListener {
                 if (topologyMember.getLive() != null) {
                     TransportConfiguration[] connector;
                     if (topologyMember.getBackup() != null) {
-                        connector = new TransportConfiguration[]{topologyMember.getLive(), topologyMember.getLive()};
+                        connector = new TransportConfiguration[]{topologyMember.getLive(), topologyMember.getBackup()};
                     } else {
                         connector = new TransportConfiguration[]{topologyMember.getLive()};
                     }
