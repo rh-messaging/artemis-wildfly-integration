@@ -5,7 +5,7 @@
         <groupId>org.jboss.activemq.artemis.integration</groupId>
         <artifactId>artemis-wildfly-integration-parent</artifactId>
         <version>1.0.8-SNAPSHOT</version>
-     </parent>
+    </parent>
 
     <artifactId>artemis-wildfly-jakarta-integration</artifactId>
     <packaging>jar</packaging>
@@ -96,54 +96,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-                <configuration>
-                    <additionalClasspathElements>
-                        <additionalClasspathElement>${project.build.directory}/integration-jakarta-tests</additionalClasspathElement>
-                    </additionalClasspathElements>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.wildfly.extras.batavia</groupId>
-                <artifactId>transformer-tools-mvn</artifactId>
-                <version>1.0.10.Final</version>
-                <executions>
-                    <execution>
-                        <id>transform-integration-tests</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>transform-classes</goal>
-                        </goals>
-                        <configuration>
-                            <inputFile>${project.build.directory}/integration-tests</inputFile>
-                            <outputFile>${project.build.directory}/integration-jakarta-tests</outputFile>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>transform-sources</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>transform-sources</goal>
-                        </goals>
-                        <configuration>
-                            <source-project>${project.basedir}/../artemis-wildfly-integration</source-project>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.wildfly.extras.batavia</groupId>
-                        <artifactId>transformer-impl-eclipse</artifactId>
-                        <version>1.0.10.Final</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -158,8 +113,18 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.22.2</version>
+                        <configuration>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${project.build.directory}/integration-jakarta-tests</additionalClasspathElement>
+                            </additionalClasspathElements>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.3.0</version>
                         <executions>
                             <execution>
                                 <id>copy</id>
@@ -189,6 +154,41 @@
                             <outputDirectory>${project.build.directory}/integration-tests</outputDirectory>
                         </configuration>
                     </plugin>
+                    <plugin>
+                        <groupId>org.wildfly.extras.batavia</groupId>
+                        <artifactId>transformer-tools-mvn</artifactId>
+                        <version>1.0.15.Final</version>
+                        <executions>
+                            <execution>
+                                <id>transform-integration-tests</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>transform-classes</goal>
+                                </goals>
+                                <configuration>
+                                    <inputFile>${project.build.directory}/integration-tests</inputFile>
+                                    <outputFile>${project.build.directory}/integration-jakarta-tests</outputFile>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>transform-sources</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>transform-sources</goal>
+                                </goals>
+                                <configuration>
+                                    <source-project>${project.basedir}/../artemis-wildfly-integration</source-project>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.wildfly.extras.batavia</groupId>
+                                <artifactId>transformer-impl-eclipse</artifactId>
+                                <version>1.0.15.Final</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
                 </plugins>
             </build>
             <dependencies>
@@ -216,7 +216,6 @@
                 <dependency>
                     <groupId>org.apache.activemq</groupId>
                     <artifactId>artemis-commons</artifactId>
-                    <version>${artemis.version}</version>
                     <scope>test</scope>
                     <type>test-jar</type>
                 </dependency>
