@@ -11,7 +11,7 @@
     <artifactId>artemis-wildfly-integration-parent</artifactId>
     <packaging>pom</packaging>
     <name>ActiveMQ Artemis WildFly Integration Parent</name>
-    <version>1.0.7</version>
+    <version>1.0.8-SNAPSHOT</version>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -200,8 +200,4 @@
             </plugin>
         </plugins>
     </build>
-
-  <scm>
-    <tag>1.0.7</tag>
-  </scm>
 </project>
