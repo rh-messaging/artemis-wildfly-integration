@@ -21,7 +21,7 @@
  */
 package org.jboss.activemq.artemis.wildfly.integration.fake;
 
-import javax.transaction.*;
+import jakarta.transaction.*;
 
 /**
  * @author <a href="mailto:andy.taylor@jboss.org">Andy Taylor</a>

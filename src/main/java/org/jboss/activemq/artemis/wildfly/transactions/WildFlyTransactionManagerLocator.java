@@ -21,7 +21,7 @@
  */
 package org.jboss.activemq.artemis.wildfly.transactions;
 
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 
 import org.jboss.tm.TransactionManagerLocator;
 

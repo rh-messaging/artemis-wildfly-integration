@@ -8,10 +8,10 @@
     </parent>
 
     <groupId>org.jboss.activemq.artemis.integration</groupId>
-    <artifactId>artemis-wildfly-integration-parent</artifactId>
-    <packaging>pom</packaging>
-    <name>ActiveMQ Artemis WildFly Integration Parent</name>
-    <version>1.0.8-SNAPSHOT</version>
+    <artifactId>artemis-wildfly-integration</artifactId>
+    <packaging>jar</packaging>
+    <name>ActiveMQ Artemis WildFly Integration</name>
+    <version>2.0.0-SNAPSHOT</version>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -24,11 +24,6 @@
         <artemis.version>2.21.0</artemis.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
     </properties>
-
-    <modules>
-        <module>artemis-wildfly-integration</module>
-        <module>artemis-wildfly-jakarta-integration</module>
-    </modules>
 
     <dependencyManagement>
         <dependencies>
@@ -62,16 +57,6 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.activemq</groupId>
-                <artifactId>artemis-service-extensions</artifactId>
-                <version>${artemis.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.activemq</groupId>
-                <artifactId>artemis-server</artifactId>
-                <version>${artemis.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.activemq</groupId>
                 <artifactId>artemis-commons</artifactId>
                 <version>${artemis.version}</version>
             </dependency>
@@ -88,7 +73,7 @@
             <dependency>
                 <groupId>org.jboss.ironjacamar</groupId>
                 <artifactId>ironjacamar-core-api</artifactId>
-                <version>1.4.38.Final</version>
+                <version>1.5.11.Final</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -104,17 +89,6 @@
                     <exclusion>
                         <groupId>*</groupId>
                         <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss</groupId>
-                <artifactId>jboss-transaction-spi</artifactId>
-                <version>${jboss-transaction-spi.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.jboss.logging</groupId>
-                        <artifactId>jboss-logging-spi</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -171,6 +145,11 @@
                 <groupId>org.apache.activemq</groupId>
                 <artifactId>artemis-server</artifactId>
                 <version>${artemis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>artemis-server</artifactId>
+                <version>${artemis.version}</version>
                 <type>test-jar</type>
                 <exclusions>
                     <exclusion>
@@ -187,6 +166,83 @@
         </dependencies>
     </dependencyManagement>
  
+    <dependencies>
+        <!--
+        JBoss Tools
+        -->
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-processor</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+            JBoss Logging
+        -->
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.logmanager</groupId>
+            <artifactId>jboss-logmanager</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>artemis-jakarta-service-extensions</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>artemis-server</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>artemis-commons</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.resource</groupId>
+            <artifactId>jakarta.resource-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ironjacamar</groupId>
+            <artifactId>ironjacamar-core-api</artifactId>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-transaction-spi-jakarta</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.jbossts.jts</groupId>
+            <artifactId>jbossjts-jacorb</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -194,10 +250,143 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.10.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>tests</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.22.2</version>
+                        <configuration>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${project.build.directory}/integration-jakarta-tests</additionalClasspathElement>
+                            </additionalClasspathElements>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.activemq.tests</groupId>
+                                    <artifactId>integration-tests</artifactId>
+                                    <version>${artemis.version}</version>
+                                    <classifier>tests</classifier>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.activemq.tests</groupId>
+                                    <artifactId>unit-tests</artifactId>
+                                    <version>${artemis.version}</version>
+                                    <classifier>tests</classifier>
+                                </artifactItem>
+                            </artifactItems>
+                            <type>tests</type>
+                            <overWrite>true</overWrite>
+                            <outputDirectory>${project.build.directory}/integration-tests</outputDirectory>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.wildfly.extras.batavia</groupId>
+                        <artifactId>transformer-tools-mvn</artifactId>
+                        <version>1.0.15.Final</version>
+                        <executions>
+                            <execution>
+                                <id>transform-integration-tests</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>transform-classes</goal>
+                                </goals>
+                                <configuration>
+                                    <inputFile>${project.build.directory}/integration-tests</inputFile>
+                                    <outputFile>${project.build.directory}/integration-jakarta-tests</outputFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.wildfly.extras.batavia</groupId>
+                                <artifactId>transformer-impl-eclipse</artifactId>
+                                <version>1.0.15.Final</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.activemq</groupId>
+                    <artifactId>artemis-jakarta-client</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.activemq</groupId>
+                    <artifactId>artemis-jakarta-server</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.activemq</groupId>
+                    <artifactId>artemis-jakarta-ra</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.activemq</groupId>
+                    <artifactId>artemis-core-client</artifactId>
+                    <scope>test</scope>
+                    <type>test-jar</type>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.activemq</groupId>
+                    <artifactId>artemis-commons</artifactId>
+                    <scope>test</scope>
+                    <type>test-jar</type>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.activemq</groupId>
+                    <artifactId>artemis-server</artifactId>
+                    <scope>test</scope>
+                    <type>test-jar</type>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>*</groupId>
+                            <artifactId>*</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>release</id>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+    </profiles>
 </project>
