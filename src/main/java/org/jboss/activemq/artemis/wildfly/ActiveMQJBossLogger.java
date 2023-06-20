@@ -21,16 +21,10 @@
  */
 package org.jboss.activemq.artemis.wildfly;
 
-import static org.apache.activemq.artemis.spi.core.remoting.ssl.SSLContextFactory.log;
-
 import javax.security.auth.Subject;
-
-import org.jboss.logging.BasicLogger;
-import org.jboss.logging.Logger;
-import org.jboss.logging.annotations.Cause;
-import org.jboss.logging.annotations.LogMessage;
-import org.jboss.logging.annotations.Message;
-import org.jboss.logging.annotations.MessageLogger;
+import org.apache.activemq.artemis.logs.BundleFactory;
+import org.apache.activemq.artemis.logs.annotation.LogBundle;
+import org.apache.activemq.artemis.logs.annotation.LogMessage;
 
 /**
  * @author <a href="mailto:andy.taylor@jboss.org">Andy Taylor</a>
@@ -49,21 +43,18 @@ import org.jboss.logging.annotations.MessageLogger;
  *
  * so an INFO message would be 131000 to 131999
  */
-@MessageLogger(projectCode = "AMQ")
-public interface ActiveMQJBossLogger extends BasicLogger {
+
+@LogBundle(projectCode = "AMQ", regexID = "13[0-9]{4}")
+public interface ActiveMQJBossLogger {
 
     /**
      * The jboss integration logger.
      */
-    ActiveMQJBossLogger LOGGER = Logger.getMessageLogger(ActiveMQJBossLogger.class, ActiveMQJBossLogger.class.getPackage().getName());
+    ActiveMQJBossLogger LOGGER = BundleFactory.newBundle(ActiveMQJBossLogger.class, ActiveMQJBossLogger.class.getPackage().getName());
 
-    @LogMessage(level = Logger.Level.INFO)
-    @Message(id = 131001, value = "Security Context Setting Subject = {0}",
-            format = Message.Format.MESSAGE_FORMAT)
+    @LogMessage(id = 131001, value = "Security Context Setting Subject = {}", level = LogMessage.Level.INFO)
     void settingSecuritySubject(Subject subject);
 
-    @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 132001, value = "An error happened while setting the context",
-            format = Message.Format.MESSAGE_FORMAT)
-    void errorSettingSecurityContext(@Cause Throwable Throwable);
+    @LogMessage(id = 132001, value = "An error happened while setting the context", level = LogMessage.Level.WARN)
+    void errorSettingSecurityContext(Throwable Throwable);
 }

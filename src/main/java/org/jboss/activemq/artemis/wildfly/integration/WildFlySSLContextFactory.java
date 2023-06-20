@@ -15,8 +15,8 @@
  */
 package org.jboss.activemq.artemis.wildfly.integration;
 
-import static org.apache.activemq.artemis.spi.core.remoting.ssl.SSLContextFactory.log;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +25,8 @@ import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 import org.apache.activemq.artemis.core.remoting.impl.ssl.DefaultSSLContextFactory;
 import org.apache.activemq.artemis.spi.core.remoting.ssl.SSLContextConfig;
 import org.apache.activemq.artemis.utils.ConfigurationHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the SSLContextFactory enabling WildFly to register and unregister SSLContext that it created.
@@ -33,7 +35,8 @@ import org.apache.activemq.artemis.utils.ConfigurationHelper;
  */
 public class WildFlySSLContextFactory extends DefaultSSLContextFactory {
 
-    private static final Map<String, SSLContext> SSL_CONTEXTS = Collections.synchronizedMap(new HashMap<String, SSLContext>());
+    private static final Map<String, SSLContext> SSL_CONTEXTS = Collections.synchronizedMap(new HashMap<>());
+    private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Register a WildFly SSLContext.
@@ -43,7 +46,7 @@ public class WildFlySSLContextFactory extends DefaultSSLContextFactory {
      */
     public static void registerSSLContext(String name, SSLContext context) {
         SSL_CONTEXTS.put(name, context);
-        log.warnf("Injecting Elytron SSLContext %s", name);
+        log.warn("Injecting Elytron SSLContext " + name);
     }
 
     /**
@@ -68,9 +71,9 @@ public class WildFlySSLContextFactory extends DefaultSSLContextFactory {
         if (useDefaultSslContext) {
             return SSLContext.getDefault();
         }
-        log.debugf("Looking for Elytron SSLContext called %s", sslContextName);
+        log.debug("Looking for Elytron SSLContext called " + sslContextName);
         if (!SSL_CONTEXTS.containsKey(sslContextName)) {
-            log.debugf("No Elytron SSLContext called %s found, creating it from the parameters", sslContextName);
+            log.debug("No Elytron SSLContext called " + sslContextName + " found, creating it from the parameters");
             SSL_CONTEXTS.put(sslContextName, super.getSSLContext(config, additionalOpts));
         }
         return SSL_CONTEXTS.get(sslContextName);

@@ -30,6 +30,7 @@ import org.jboss.tm.TransactionManagerLocator;
  */
 public class WildFlyTransactionManagerLocator implements org.apache.activemq.artemis.service.extensions.transactions.TransactionManagerLocator {
 
+    @Override
     public TransactionManager getTransactionManager() {
         return TransactionManagerLocator.locateTransactionManager();
     }
