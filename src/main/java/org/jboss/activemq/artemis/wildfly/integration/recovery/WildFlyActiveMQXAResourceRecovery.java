@@ -17,11 +17,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.arjuna.ats.jta.recovery.XAResourceRecovery;
+import java.lang.invoke.MethodHandles;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
-import org.apache.activemq.artemis.service.extensions.xa.recovery.ActiveMQXARecoveryLogger;
 import org.apache.activemq.artemis.service.extensions.xa.recovery.ActiveMQXAResourceRecovery;
 import org.apache.activemq.artemis.service.extensions.xa.recovery.ActiveMQXAResourceWrapper;
 import org.apache.activemq.artemis.service.extensions.xa.recovery.XARecoveryConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A XAResourceRecovery instance that can be used to recover any JMS provider.
@@ -53,7 +55,9 @@ import org.apache.activemq.artemis.service.extensions.xa.recovery.XARecoveryConf
  */
 public class WildFlyActiveMQXAResourceRecovery extends ActiveMQXAResourceRecovery implements XAResourceRecovery {
 
-    private final boolean trace = ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled();
+   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private final boolean trace = logger.isTraceEnabled();
 
     private boolean hasMore;
 
@@ -61,13 +65,13 @@ public class WildFlyActiveMQXAResourceRecovery extends ActiveMQXAResourceRecover
 
     public WildFlyActiveMQXAResourceRecovery() {
         if (trace) {
-            ActiveMQXARecoveryLogger.LOGGER.trace("Constructing ActiveMQXAResourceRecovery");
+            logger.trace("Constructing ActiveMQXAResourceRecovery");
         }
     }
 
     public boolean initialise(final String config) {
-        if (ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled()) {
-            ActiveMQXARecoveryLogger.LOGGER.trace(this + " intialise: " + config);
+        if (trace) {
+            logger.trace(this + " intialise: " + config);
         }
 
         String[] configs = config.split(";");
@@ -85,16 +89,16 @@ public class WildFlyActiveMQXAResourceRecovery extends ActiveMQXAResourceRecover
 
         res = new ActiveMQXAResourceWrapper(xaRecoveryConfigs);
 
-        if (ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled()) {
-            ActiveMQXARecoveryLogger.LOGGER.trace(this + " initialised");
+        if (trace) {
+            logger.trace(this + " initialised");
         }
 
         return true;
     }
 
     public boolean hasMoreResources() {
-        if (ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled()) {
-            ActiveMQXARecoveryLogger.LOGGER.trace(this + " hasMoreResources");
+        if (trace) {
+            logger.trace(this + " hasMoreResources");
         }
 
         /*
@@ -115,14 +119,16 @@ public class WildFlyActiveMQXAResourceRecovery extends ActiveMQXAResourceRecover
         return hasMore;
     }
 
+   @Override
     public XAResource getXAResource() {
-        if (ActiveMQXARecoveryLogger.LOGGER.isTraceEnabled()) {
-            ActiveMQXARecoveryLogger.LOGGER.trace(this + " getXAResource");
+        if (trace) {
+            logger.trace(this + " getXAResource");
         }
 
         return res;
     }
 
+   @Override
     public XAResource[] getXAResources() {
         return new XAResource[]{res};
     }

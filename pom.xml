@@ -21,7 +21,7 @@
     </licenses>
 
     <properties>
-        <artemis.version>2.21.0</artemis.version>
+        <artemis.version>2.29.0</artemis.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
     </properties>
 
@@ -44,11 +44,16 @@
                 <artifactId>jboss-logging</artifactId>
                 <version>3.5.0.Final</version>
             </dependency>
-
             <dependency>
                 <groupId>org.jboss.logmanager</groupId>
                 <artifactId>jboss-logmanager</artifactId>
                 <version>2.1.19.Final</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.36</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.activemq</groupId>
@@ -104,6 +109,11 @@
                 <type>test-jar</type>
             </dependency>
             <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>artemis-log-annotation-processor</artifactId>
+                <version>${artemis.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.activemq.tests</groupId>
                 <artifactId>unit-tests</artifactId>
                 <version>${artemis.version}</version>
@@ -112,6 +122,11 @@
             <dependency>
                 <groupId>org.apache.activemq.tests</groupId>
                 <artifactId>integration-tests</artifactId>
+                <version>${artemis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>artemis-unit-test-support</artifactId>
                 <version>${artemis.version}</version>
             </dependency>
             <dependency>
@@ -170,6 +185,11 @@
         <!--
         JBoss Tools
         -->
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>artemis-log-annotation-processor</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-processor</artifactId>
@@ -242,13 +262,23 @@
             <artifactId>jbossjts-jacorb</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>artemis-unit-test-support</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>
