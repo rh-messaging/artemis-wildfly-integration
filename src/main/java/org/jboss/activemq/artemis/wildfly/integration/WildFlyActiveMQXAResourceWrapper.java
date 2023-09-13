@@ -25,4 +25,9 @@ public class WildFlyActiveMQXAResourceWrapper extends ActiveMQXAResourceWrapperI
     public WildFlyActiveMQXAResourceWrapper(XAResource xaResource, Map<String, Object> properties) {
         super(xaResource, properties);
     }
+
+    @Override
+    public String toString() {
+        return "WildFlyActiveMQXAResourceWrapper{" + "resource=" + getResource() + ", productName=" + getProductName() + ", productVersion=" + getProductVersion() + ", jndiNameNodeId=" + getJndiName() +'}';
+    }
 }
