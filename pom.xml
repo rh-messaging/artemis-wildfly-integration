@@ -21,7 +21,7 @@
     </licenses>
 
     <properties>
-        <artemis.version>2.29.0</artemis.version>
+        <artemis.version>2.30.0</artemis.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
     </properties>
 
