@@ -16,14 +16,32 @@ import javax.transaction.xa.XAResource;
 import java.util.Map;
 
 import org.apache.activemq.artemis.service.extensions.xa.ActiveMQXAResourceWrapperImpl;
+import org.apache.activemq.artemis.service.extensions.xa.recovery.ActiveMQXAResourceWrapper;
+import org.apache.activemq.artemis.service.extensions.xa.recovery.XARecoveryConfig;
 
 /**
  * @author <a href="mailto:mtaylor@redhat.com">Martyn Taylor</a>
  */
 public class WildFlyActiveMQXAResourceWrapper extends ActiveMQXAResourceWrapperImpl implements org.jboss.jca.core.spi.transaction.xa.XAResourceWrapper, org.jboss.tm.XAResourceWrapper {
+    private boolean obsolete = false;
+    private XARecoveryConfig config;
 
     public WildFlyActiveMQXAResourceWrapper(XAResource xaResource, Map<String, Object> properties) {
         super(xaResource, properties);
+    }
+
+    public void updateRecoveryConfig(XARecoveryConfig config) {
+        this.obsolete = true;
+        this.config = config;
+    }
+
+    public void update() {
+        this.obsolete = false;
+        ((ActiveMQXAResourceWrapper) getResource()).updateRecoveryConfig(config);
+    }
+
+    public boolean isObsolete() {
+        return obsolete;
     }
 
     @Override

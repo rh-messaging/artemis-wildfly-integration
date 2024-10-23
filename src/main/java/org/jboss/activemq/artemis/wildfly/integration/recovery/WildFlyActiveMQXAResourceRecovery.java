@@ -69,6 +69,7 @@ public class WildFlyActiveMQXAResourceRecovery extends ActiveMQXAResourceRecover
         }
     }
 
+   @Override
     public boolean initialise(final String config) {
         if (trace) {
             logger.trace(this + " intialise: " + config);
@@ -96,6 +97,7 @@ public class WildFlyActiveMQXAResourceRecovery extends ActiveMQXAResourceRecover
         return true;
     }
 
+   @Override
     public boolean hasMoreResources() {
         if (trace) {
             logger.trace(this + " hasMoreResources");

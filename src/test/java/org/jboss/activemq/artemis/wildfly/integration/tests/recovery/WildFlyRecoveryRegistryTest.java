@@ -17,6 +17,8 @@
 package org.jboss.activemq.artemis.wildfly.integration.tests.recovery;
 
 import static javax.naming.Context.INITIAL_CONTEXT_FACTORY;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

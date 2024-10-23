@@ -51,7 +51,6 @@ public class WildFlyRecoveryDiscovery implements SessionFailureListener {
             started = true;
 
             locator = config.createServerLocator();
-            locator.disableFinalizeCheck();
             locator.addClusterTopologyListener(new InternalListener(config));
             try {
                 sessionFactory = (ClientSessionFactoryInternal) locator.createSessionFactory();
