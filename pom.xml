@@ -21,7 +21,7 @@
     </licenses>
 
     <properties>
-        <artemis.version>2.30.0</artemis.version>
+        <artemis.version>2.37.0</artemis.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
     </properties>
 
@@ -174,10 +174,22 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <scope>test</scope>
+                <version>5.10.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <scope>test</scope>
+                <version>5.10.2</version>
+            </dependency>
+            <!--            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.13.2</version>
-            </dependency>
+            </dependency>-->
         </dependencies>
     </dependencyManagement>
  
@@ -283,6 +295,19 @@
                     <source>11</source>
                     <target>11</target>
                 </configuration>
+                <!--                <executions>
+                    <execution>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>-cp</arg>
+                                <arg>${jar_classpath}:${project.build.directory}/integration-jakarta-tests/</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>-->
             </plugin>
         </plugins>
     </build>
@@ -308,7 +333,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <version>3.5.0</version>
+                        <version>3.8.0</version>
                         <executions>
                             <execution>
                                 <id>copy</id>
@@ -316,6 +341,16 @@
                                 <goals>
                                     <goal>unpack</goal>
                                 </goals>
+                            </execution>
+                            <execution>
+                                <id>build-classpath</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>build-classpath</goal>
+                                </goals>
+                                <configuration>
+                                    <outputProperty>jar_classpath</outputProperty>
+                                </configuration>
                             </execution>
                         </executions>
                         <configuration>
@@ -331,6 +366,11 @@
                                     <artifactId>unit-tests</artifactId>
                                     <version>${artemis.version}</version>
                                     <classifier>tests</classifier>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.activemq.tests</groupId>
+                                    <artifactId>artemis-test-support</artifactId>
+                                    <version>${artemis.version}</version>
                                 </artifactItem>
                             </artifactItems>
                             <type>tests</type>
@@ -352,6 +392,7 @@
                                 <configuration>
                                     <inputFile>${project.build.directory}/integration-tests</inputFile>
                                     <outputFile>${project.build.directory}/integration-jakarta-tests</outputFile>
+                                    <!--                                    <outputFolder>${project.build.directory}/integration-jakarta-tests</outputFolder>-->
                                 </configuration>
                             </execution>
                         </executions>
@@ -406,8 +447,13 @@
                     </exclusions>
                 </dependency>
                 <dependency>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-api</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-engine</artifactId>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
