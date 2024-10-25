@@ -51,7 +51,6 @@ public class WildFlyRecoveryDiscovery implements SessionFailureListener {
             started = true;
 
             locator = config.createServerLocator();
-            locator.disableFinalizeCheck();
             locator.addClusterTopologyListener(new InternalListener(config));
             try {
                 sessionFactory = (ClientSessionFactoryInternal) locator.createSessionFactory();
@@ -134,12 +133,12 @@ public class WildFlyRecoveryDiscovery implements SessionFailureListener {
             } else {
                 // There is a case where the backup announce itself,
                 // we need to ignore a case where getLive is null
-                if (topologyMember.getLive() != null) {
+                if (topologyMember.getPrimary() != null) {
                     TransportConfiguration[] connector;
                     if (topologyMember.getBackup() != null) {
-                        connector = new TransportConfiguration[]{topologyMember.getLive(), topologyMember.getBackup()};
+                        connector = new TransportConfiguration[]{topologyMember.getPrimary(), topologyMember.getBackup()};
                     } else {
-                        connector = new TransportConfiguration[]{topologyMember.getLive()};
+                        connector = new TransportConfiguration[]{topologyMember.getPrimary()};
                     }
                     WildFlyActiveMQRecoveryRegistry.getInstance().nodeUp(config, topologyMember.getNodeId(), connector,
                             config.getUsername(), config.getPassword(), config.getProperties());

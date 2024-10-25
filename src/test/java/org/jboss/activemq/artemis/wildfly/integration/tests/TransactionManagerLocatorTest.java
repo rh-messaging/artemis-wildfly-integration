@@ -22,19 +22,20 @@
 package org.jboss.activemq.artemis.wildfly.integration.tests;
 
 import static javax.naming.Context.INITIAL_CONTEXT_FACTORY;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.activemq.artemis.service.extensions.ServiceUtils;
 import org.jboss.activemq.artemis.wildfly.integration.fake.DummyTransactionManager;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
 
 import javax.naming.InitialContext;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:andy.taylor@jboss.org">Andy Taylor</a>
  */
-public class TransactionManagerLocatorTest extends Assert {
+public class TransactionManagerLocatorTest {
 
     @Test
     public void testServiceUtilsReturnsWildFlyActiveMQXAResourceWrapperFactory() throws Exception {
@@ -46,7 +47,7 @@ public class TransactionManagerLocatorTest extends Assert {
         assertTrue(ServiceUtils.getTransactionManager() instanceof DummyTransactionManager);
     }
 
-    @After
+    @AfterEach
     public void resetTransactionManager() {
         ServiceUtils.setTransactionManager(null);
         System.clearProperty(INITIAL_CONTEXT_FACTORY);

@@ -13,13 +13,14 @@
 
 package org.jboss.activemq.artemis.wildfly.integration.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.lang.reflect.Method;
 
 import org.apache.activemq.artemis.service.extensions.ServiceUtils;
 import org.jboss.activemq.artemis.wildfly.integration.WildFlyActiveMQXAResourceWrapperFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertEquals;
 
 /**
  * @author <a href="mailto:mtaylor@redhat.com">Martyn Taylor</a>

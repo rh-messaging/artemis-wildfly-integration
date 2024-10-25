@@ -17,17 +17,18 @@
 
 package org.jboss.activemq.artemis.wildfly.integration.tests.recovery;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.service.extensions.xa.recovery.XARecoveryConfig;
 import org.jboss.activemq.artemis.wildfly.integration.recovery.WildFlyRecoveryDiscovery;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author mtaylor
@@ -48,6 +49,6 @@ public class WildFlyRecoveryDiscoveryTest
       WildFlyRecoveryDiscovery discovery2 = new WildFlyRecoveryDiscovery(config);
       assertTrue(discoverySet.add(discovery1));
       assertFalse(discoverySet.add(discovery2));
-      assertEquals("should have only one in the set", 1, discoverySet.size());
+       assertEquals(1, discoverySet.size(), "should have only one in the set");
    }
 }

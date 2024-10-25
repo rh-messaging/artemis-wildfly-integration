@@ -17,6 +17,8 @@
 package org.jboss.activemq.artemis.wildfly.integration.tests.recovery;
 
 import static javax.naming.Context.INITIAL_CONTEXT_FACTORY;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -32,12 +34,13 @@ import org.jboss.activemq.artemis.wildfly.integration.fake.DummyTransactionManag
 import org.jboss.activemq.artemis.wildfly.integration.recovery.WildFlyActiveMQRecoveryRegistry;
 import org.jboss.activemq.artemis.wildfly.integration.recovery.WildFlyActiveMQRegistry;
 import org.jboss.activemq.artemis.wildfly.integration.recovery.WildFlyRecoveryDiscovery;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
 
 import javax.naming.InitialContext;
 import javax.transaction.xa.XAResource;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author mtaylor
@@ -45,7 +48,7 @@ import javax.transaction.xa.XAResource;
 public class WildFlyRecoveryRegistryTest extends ActiveMQRAClusteredTestBase {
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         System.setProperty(INITIAL_CONTEXT_FACTORY, "org.jboss.activemq.artemis.wildfly.integration.fake.DummyInitialContext");
         InitialContext initialContext = new InitialContext();
@@ -53,7 +56,7 @@ public class WildFlyRecoveryRegistryTest extends ActiveMQRAClusteredTestBase {
         super.setUp();
     }
 
-    @After
+    @AfterEach
     public void resetTransactionManager() throws Exception {
         ServiceUtils.setTransactionManager(null);
         System.clearProperty(INITIAL_CONTEXT_FACTORY);

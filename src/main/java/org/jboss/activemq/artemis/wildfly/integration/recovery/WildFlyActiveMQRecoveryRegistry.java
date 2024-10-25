@@ -52,13 +52,13 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
 
     private static final WildFlyActiveMQRecoveryRegistry theInstance = new WildFlyActiveMQRecoveryRegistry();
 
-    private final ConcurrentHashMap<XARecoveryConfig, WildFlyRecoveryDiscovery> configSet = new ConcurrentHashMap<XARecoveryConfig, WildFlyRecoveryDiscovery>();
+    private final ConcurrentHashMap<XARecoveryConfig, WildFlyRecoveryDiscovery> configSet = new ConcurrentHashMap<>();
 
     /**
      * The list by server id and resource adapter wrapper, what will actually be calling recovery.
      * This will be returned by getXAResources
      */
-    private final ConcurrentHashMap<String, WildFlyActiveMQXAResourceWrapper> recoveries = new ConcurrentHashMap<String, WildFlyActiveMQXAResourceWrapper>();
+    private final ConcurrentHashMap<String, WildFlyActiveMQXAResourceWrapper> recoveries = new ConcurrentHashMap<>();
 
     /**
      * In case of failures, we retry on the next getXAResources
@@ -70,6 +70,8 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
 
     /**
      * This will be called periodically by the Transaction Manager
+     *
+     * @return the XAResources managed by this registry
      */
     @Override
     public XAResource[] getXAResources() {
@@ -77,6 +79,11 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
             checkFailures();
 
             WildFlyActiveMQXAResourceWrapper[] resourceArray = new WildFlyActiveMQXAResourceWrapper[recoveries.size()];
+            for (WildFlyActiveMQXAResourceWrapper resource : recoveries.values()) {
+                if (resource.isObsolete()) {
+                    resource.update();
+                }
+            }
             resourceArray = recoveries.values().toArray(resourceArray);
 
             if (WildFlyActiveMQLogger.LOGGER.isDebugEnabled()) {
@@ -147,12 +154,11 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
     }
 
     /**
-     * in case of a failure the Discovery will register itslef to retry
+     * in case of a failure the Discovery will register itself to retry
      *
      * @param failedDiscovery
      */
     public void failedDiscovery(WildFlyRecoveryDiscovery failedDiscovery) {
-        WildFlyActiveMQLogger.LOGGER.debug("RecoveryDiscovery being set to restart:" + failedDiscovery);
         synchronized (failedDiscoverySet) {
             failedDiscoverySet.add(failedDiscovery);
         }
@@ -194,12 +200,39 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
             xaResourceProperties.put(org.apache.activemq.artemis.service.extensions.xa.ActiveMQXAResourceWrapper.ACTIVEMQ_PRODUCT_VERSION, VersionLoader.getVersion().getFullVersion());
 
             wrapper = new WildFlyActiveMQXAResourceWrapper(xaResource, xaResourceProperties);
-            recoveries.putIfAbsent(nodeID, wrapper);
+            recoveries.put(nodeID, wrapper);
         } else {
-            if(networkConfiguration.length >= listeningConfig.getTransportConfig().length) {
-                ((ActiveMQXAResourceWrapper) wrapper.getResource()).updateRecoveryConfig(config);
+            if (isNetworkConfigurationUpdateRequired(listeningConfig.getTransportConfig(), networkConfiguration)) {
+                if (WildFlyActiveMQLogger.LOGGER.isDebugEnabled()) {
+                    WildFlyActiveMQLogger.LOGGER.debug("Updating " + wrapper + " configuration");
+                }
+                wrapper.updateRecoveryConfig(config);
             }
         }
+    }
+
+    private boolean isNetworkConfigurationUpdateRequired(TransportConfiguration[] initialNetworkConfiguration, TransportConfiguration[] networkConfiguration) {
+        if (initialNetworkConfiguration.length < networkConfiguration.length) {
+            return true;
+        }
+        if (initialNetworkConfiguration.length > networkConfiguration.length) {
+            if (WildFlyActiveMQLogger.LOGGER.isDebugEnabled()) {
+                WildFlyActiveMQLogger.LOGGER.debug("initialNetworkConfiguration has more elements then networkConfiguration");
+            }
+            return false;
+        }
+        for (int i = 0; i < initialNetworkConfiguration.length; i++) {
+            if (!initialNetworkConfiguration[i].isSameParams(networkConfiguration[i])) {
+                if (WildFlyActiveMQLogger.LOGGER.isDebugEnabled()) {
+                    WildFlyActiveMQLogger.LOGGER.debug(initialNetworkConfiguration[i] + " is different from " + networkConfiguration[i]);
+                }
+                return true;
+            }
+        }
+        if (WildFlyActiveMQLogger.LOGGER.isDebugEnabled()) {
+            WildFlyActiveMQLogger.LOGGER.debug(Arrays.toString(initialNetworkConfiguration) + " is the same as " + Arrays.toString(networkConfiguration));
+        }
+        return false;
     }
 
     public void nodeDown(String nodeID) {
