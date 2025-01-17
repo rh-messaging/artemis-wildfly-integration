@@ -16,6 +16,7 @@
  */
 package org.jboss.activemq.artemis.wildfly.integration.recovery;
 
+import java.lang.invoke.MethodHandles;
 import org.apache.activemq.artemis.api.core.client.ClientSessionFactory;
 import org.apache.activemq.artemis.service.extensions.xa.recovery.XARecoveryConfig;
 import org.jboss.logging.BasicLogger;
@@ -49,7 +50,7 @@ public interface WildFlyActiveMQLogger extends BasicLogger {
     /**
      * The default logger.
      */
-    WildFlyActiveMQLogger LOGGER = Logger.getMessageLogger(WildFlyActiveMQLogger.class, WildFlyActiveMQLogger.class.getPackage().getName());
+    WildFlyActiveMQLogger LOGGER = Logger.getMessageLogger(MethodHandles.lookup(), WildFlyActiveMQLogger.class, "org.jboss.activemq.artemis.wildfly.integration.recovery");
 
     @LogMessage(level = Logger.Level.INFO)
     @Message(id = 121003, value = "JMS Server Manager Running cached command for {0}", format = Message.Format.MESSAGE_FORMAT)
