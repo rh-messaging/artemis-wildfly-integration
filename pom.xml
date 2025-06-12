@@ -291,19 +291,6 @@
                     <source>11</source>
                     <target>11</target>
                 </configuration>
-                <!--                <executions>
-                    <execution>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <compilerArgs>
-                                <arg>-cp</arg>
-                                <arg>${jar_classpath}:${project.build.directory}/integration-jakarta-tests/</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </execution>
-                </executions>-->
             </plugin>
         </plugins>
     </build>
@@ -332,7 +319,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <version>3.8.0</version>
+                        <version>3.8.1</version>
                         <executions>
                             <execution>
                                 <id>copy</id>
@@ -391,7 +378,6 @@
                                 <configuration>
                                     <inputFile>${project.build.directory}/integration-tests</inputFile>
                                     <outputFile>${project.build.directory}/integration-jakarta-tests</outputFile>
-                                    <!--                                    <outputFolder>${project.build.directory}/integration-jakarta-tests</outputFolder>-->
                                 </configuration>
                             </execution>
                         </executions>
@@ -461,8 +447,8 @@
             <id>release</id>
             <activation>
                 <property>
-                    <name>performRelease</name>
-                    <value>!true</value>
+                    <name>release</name>
+                    <value>true</value>
                 </property>
             </activation>
             <properties>
