@@ -21,3 +21,14 @@ able to run the tests from the artemis-wildfly-integration directory:
 ```bash
   mvn clean test
 ```
+
+
+Releasing
+===========
+
+
+```bash
+  mvn release:prepare -DpushChanges=false -DlocalCheckout=true -Darguments="-Drelease=true"
+  mvn release:perform -DlocalCheckout=true -Pjboss-release -Darguments="-Drelease=true"
+
+```

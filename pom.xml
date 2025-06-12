@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>47</version>
+        <version>49</version>
     </parent>
 
     <groupId>org.jboss.activemq.artemis.integration</groupId>
@@ -21,8 +21,9 @@
     </licenses>
 
     <properties>
-        <artemis.version>2.38.0</artemis.version>
+        <artemis.version>2.41.0</artemis.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
+        <junit.version>5.12.2</junit.version>
     </properties>
 
     <dependencyManagement>
@@ -33,7 +34,7 @@
             <dependency>
                 <groupId>org.jboss.logging</groupId>
                 <artifactId>jboss-logging-processor</artifactId>
-                <version>3.0.3.Final</version>
+                <version>3.0.4.Final</version>
             </dependency>
 
             <!--
@@ -78,7 +79,7 @@
             <dependency>
                 <groupId>org.jboss.ironjacamar</groupId>
                 <artifactId>ironjacamar-core-api</artifactId>
-                <version>1.5.11.Final</version>
+                <version>1.5.18.Final</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -177,19 +178,14 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
                 <scope>test</scope>
-                <version>5.10.2</version>
+                <version>${junit.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
                 <scope>test</scope>
-                <version>5.10.2</version>
+                <version>${junit.version}</version>
             </dependency>
-            <!--            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.13.2</version>
-            </dependency>-->
         </dependencies>
     </dependencyManagement>
  
@@ -316,7 +312,10 @@
         <profile>
             <id>tests</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>release</name>
+                    <value>!true</value>
+                </property>
             </activation>
             <build>
                 <plugins>
