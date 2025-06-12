@@ -459,6 +459,12 @@
         </profile>
         <profile>
             <id>release</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>!true</value>
+                </property>
+            </activation>
             <properties>
                 <maven.test.skip>true</maven.test.skip>
             </properties>
