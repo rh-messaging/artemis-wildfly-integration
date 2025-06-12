@@ -28,7 +28,10 @@ Releasing
 
 
 ```bash
+  git checkout main
+  git pull origin main
   mvn release:prepare -DpushChanges=false -DlocalCheckout=true -Darguments="-Drelease=true"
   mvn release:perform -DlocalCheckout=true -Pjboss-release -Darguments="-Drelease=true"
-
+  git push origin main
+  git push origin --tags
 ```
