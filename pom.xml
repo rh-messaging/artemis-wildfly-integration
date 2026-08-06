@@ -24,6 +24,10 @@
         <artemis.version>2.38.0</artemis.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
         <junit.version>5.12.2</junit.version>
+        <!-- Nexus deployment settings -->
+        <nexus.staging.tag>artemis-wildfly-integration-${project.version}</nexus.staging.tag>
+        <nexus.repository.staging>wildfly-staging</nexus.repository.staging>
+        <nexus.repository.release>wildfly</nexus.repository.release>
     </properties>
 
     <dependencyManagement>
@@ -388,6 +392,24 @@
                                 <version>1.0.15.Final</version>
                             </dependency>
                         </dependencies>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <configuration>
+                            <tagNameFormat>@{project.version}</tagNameFormat>
+                            <localCheckout>true</localCheckout>
+                            <pushChanges>false</pushChanges>
+                            <preparationGoals>clean install</preparationGoals>
+                            <preparationProfiles>release</preparationProfiles>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
