@@ -212,7 +212,10 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
     }
 
     private boolean isNetworkConfigurationUpdateRequired(TransportConfiguration[] initialNetworkConfiguration, TransportConfiguration[] networkConfiguration) {
-        if (initialNetworkConfiguration.length < networkConfiguration.length) {
+        if (networkConfiguration == null) {
+            return false;
+        }
+        if (initialNetworkConfiguration == null || initialNetworkConfiguration.length < networkConfiguration.length) {
             return true;
         }
         if (initialNetworkConfiguration.length > networkConfiguration.length) {
@@ -222,6 +225,12 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
             return false;
         }
         for (int i = 0; i < initialNetworkConfiguration.length; i++) {
+            if (initialNetworkConfiguration[i] == null || networkConfiguration[i] == null) {
+                if (initialNetworkConfiguration[i] != networkConfiguration[i]) {
+                    return true;
+                }
+                continue;
+            }
             if (!initialNetworkConfiguration[i].isSameParams(networkConfiguration[i])) {
                 if (WildFlyActiveMQLogger.LOGGER.isDebugEnabled()) {
                     WildFlyActiveMQLogger.LOGGER.debug(initialNetworkConfiguration[i] + " is different from " + networkConfiguration[i]);
