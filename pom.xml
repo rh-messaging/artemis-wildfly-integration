@@ -21,7 +21,7 @@
     </licenses>
 
     <properties>
-        <artemis.version>2.41.0</artemis.version>
+        <artemis.version>2.38.0</artemis.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
         <junit.version>5.12.2</junit.version>
     </properties>
@@ -188,7 +188,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
- 
+
     <dependencies>
         <!--
         JBoss Tools
