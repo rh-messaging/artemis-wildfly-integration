@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>51</version>
+        <version>53</version>
     </parent>
 
     <groupId>org.jboss.activemq.artemis.integration</groupId>
@@ -32,10 +32,9 @@
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
         <jbossjts-jacorb.version>4.17.13.Final</jbossjts-jacorb.version>
         <junit.version>5.12.2</junit.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <slf4j.version>2.0.16</slf4j.version>
+        <!-- Plugin version overrides -->
+        <version.surefire>2.22.2</version.surefire>
         <!-- Nexus deployment settings -->
         <nexus.staging.tag>artemis-wildfly-integration-${project.version}</nexus.staging.tag>
         <nexus.repository.staging>wildfly-staging</nexus.repository.staging>
@@ -302,7 +301,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>
@@ -384,12 +382,10 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${maven-surefire-plugin.version}</version>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <version>${maven-dependency-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>copy</id>
