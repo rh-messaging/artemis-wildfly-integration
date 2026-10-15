@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;

@@ -21,20 +21,24 @@
     </licenses>
 
     <properties>
-        <artemis.version>2.38.0</artemis.version>
+        <artemis.version>2.57.0</artemis.version>
         <batavia.version>1.0.16.Final</batavia.version>
+        <commons.lang.version>3.20.0</commons.lang.version>
         <ironjacamar.version>1.5.18.Final</ironjacamar.version>
         <jakarta.resource-api.version>2.1.0</jakarta.resource-api.version>
         <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
-        <jboss-logging.version>3.6.1.Final</jboss-logging.version>
+        <jboss-logging.version>3.6.3.Final</jboss-logging.version>
         <jboss-logging-processor.version>3.0.4.Final</jboss-logging-processor.version>
-        <jboss-logmanager.version>2.1.19.Final</jboss-logmanager.version>
+        <jboss-logmanager.version>3.2.2.Final</jboss-logmanager.version>
+        <jboss-logmanager.slf4j.version>2.1.0.Final</jboss-logmanager.slf4j.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
         <jbossjts-jacorb.version>4.17.13.Final</jbossjts-jacorb.version>
         <junit.version>5.12.2</junit.version>
+        <junit.platform.version>1.12.2</junit.platform.version>
+        <caffeine.version>3.2.4</caffeine.version>
         <slf4j.version>2.0.16</slf4j.version>
         <!-- Plugin version overrides -->
-        <version.surefire>2.22.2</version.surefire>
+        <version.surefire>3.5.3</version.surefire>
         <!-- Nexus deployment settings -->
         <nexus.staging.tag>artemis-wildfly-integration-${project.version}</nexus.staging.tag>
         <nexus.repository.staging>wildfly-staging</nexus.repository.staging>
@@ -72,12 +76,12 @@
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq</groupId>
+                <groupId>org.apache.artemis</groupId>
                 <artifactId>artemis-jakarta-service-extensions</artifactId>
                 <version>${artemis.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq</groupId>
+                <groupId>org.apache.artemis</groupId>
                 <artifactId>artemis-commons</artifactId>
                 <version>${artemis.version}</version>
             </dependency>
@@ -119,69 +123,55 @@
                 <version>${jbossjts-jacorb.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq</groupId>
+                <groupId>org.apache.artemis</groupId>
                 <artifactId>artemis-core-client</artifactId>
                 <version>${artemis.version}</version>
-                <type>test-jar</type>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq</groupId>
+                <groupId>org.apache.artemis</groupId>
                 <artifactId>artemis-log-annotation-processor</artifactId>
                 <version>${artemis.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq.tests</groupId>
+                <groupId>org.apache.artemis.tests</groupId>
                 <artifactId>unit-tests</artifactId>
                 <version>${artemis.version}</version>
-                <type>test-jar</type>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq.tests</groupId>
+                <groupId>org.apache.artemis.tests</groupId>
                 <artifactId>integration-tests</artifactId>
                 <version>${artemis.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq</groupId>
+                <groupId>org.apache.artemis</groupId>
                 <artifactId>artemis-unit-test-support</artifactId>
                 <version>${artemis.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq.tests</groupId>
+                <groupId>org.apache.artemis.tests</groupId>
                 <artifactId>integration-tests</artifactId>
                 <version>${artemis.version}</version>
                 <type>test-jar</type>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq</groupId>
+                <groupId>org.apache.artemis</groupId>
                 <artifactId>artemis-jakarta-client</artifactId>
                 <version>${artemis.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq</groupId>
+                <groupId>org.apache.artemis</groupId>
                 <artifactId>artemis-jakarta-server</artifactId>
                 <version>${artemis.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq</groupId>
+                <groupId>org.apache.artemis</groupId>
                 <artifactId>artemis-jakarta-ra</artifactId>
                 <version>${artemis.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq</groupId>
-                <artifactId>artemis-commons</artifactId>
-                <version>${artemis.version}</version>
-                <type>test-jar</type>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.activemq</groupId>
+                <groupId>org.apache.artemis</groupId>
                 <artifactId>artemis-server</artifactId>
                 <version>${artemis.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.activemq</groupId>
-                <artifactId>artemis-server</artifactId>
-                <version>${artemis.version}</version>
-                <type>test-jar</type>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -201,6 +191,12 @@
                 <scope>test</scope>
                 <version>${junit.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <scope>test</scope>
+                <version>${junit.platform.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -209,7 +205,7 @@
         JBoss Tools
         -->
         <dependency>
-            <groupId>org.apache.activemq</groupId>
+            <groupId>org.apache.artemis</groupId>
             <artifactId>artemis-log-annotation-processor</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -234,17 +230,22 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.activemq</groupId>
+            <groupId>org.apache.artemis</groupId>
             <artifactId>artemis-jakarta-service-extensions</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.activemq</groupId>
+            <groupId>org.apache.artemis</groupId>
+            <artifactId>artemis-core-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.artemis</groupId>
             <artifactId>artemis-server</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.activemq</groupId>
+            <groupId>org.apache.artemis</groupId>
             <artifactId>artemis-commons</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -286,14 +287,20 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.activemq</groupId>
+            <groupId>org.apache.artemis</groupId>
             <artifactId>artemis-unit-test-support</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.slf4j</groupId>
+            <artifactId>slf4j-jboss-logmanager</artifactId>
+            <version>${jboss-logmanager.slf4j.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -311,7 +318,7 @@
                             <version>${jboss-logging-processor.version}</version>
                         </path>
                         <path>
-                            <groupId>org.apache.activemq</groupId>
+                            <groupId>org.apache.artemis</groupId>
                             <artifactId>artemis-log-annotation-processor</artifactId>
                             <version>${artemis.version}</version>
                         </path>
@@ -355,6 +362,9 @@
                                         <resource>
                                             <directory>${project.build.directory}/integration-jakarta-tests</directory>
                                             <filtering>false</filtering>
+                                            <excludes>
+                                                <exclude>META-INF/services/**</exclude>
+                                            </excludes>
                                         </resource>
                                     </resources>
                                 </configuration>
@@ -372,7 +382,7 @@
                                     <version>${jboss-logging-processor.version}</version>
                                 </path>
                                 <path>
-                                    <groupId>org.apache.activemq</groupId>
+                                    <groupId>org.apache.artemis</groupId>
                                     <artifactId>artemis-log-annotation-processor</artifactId>
                                     <version>${artemis.version}</version>
                                 </path>
@@ -382,6 +392,12 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <includes>
+                                <include>org/jboss/activemq/artemis/wildfly/**/*Test.class</include>
+                            </includes>
+                            <argLine>-Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dlogging.configuration=file:${project.basedir}/src/test/resources/logging.properties</argLine>
+                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -408,24 +424,32 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.apache.activemq.tests</groupId>
+                                    <groupId>org.apache.artemis.tests</groupId>
                                     <artifactId>integration-tests</artifactId>
                                     <version>${artemis.version}</version>
                                     <classifier>tests</classifier>
+                                    <type>test-jar</type>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.apache.activemq.tests</groupId>
+                                    <groupId>org.apache.artemis.tests</groupId>
                                     <artifactId>unit-tests</artifactId>
                                     <version>${artemis.version}</version>
                                     <classifier>tests</classifier>
+                                    <type>test-jar</type>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.apache.activemq.tests</groupId>
+                                    <groupId>org.apache.artemis.tests</groupId>
+                                    <artifactId>artemis-test-support</artifactId>
+                                    <version>${artemis.version}</version>
+                                    <classifier>tests</classifier>
+                                    <type>test-jar</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.artemis.tests</groupId>
                                     <artifactId>artemis-test-support</artifactId>
                                     <version>${artemis.version}</version>
                                 </artifactItem>
                             </artifactItems>
-                            <type>tests</type>
                             <overWrite>true</overWrite>
                             <outputDirectory>${project.build.directory}/integration-tests</outputDirectory>
                         </configuration>
@@ -477,43 +501,25 @@
             </build>
             <dependencies>
                 <dependency>
-                    <groupId>org.apache.activemq</groupId>
+                    <groupId>com.github.ben-manes.caffeine</groupId>
+                    <artifactId>caffeine</artifactId>
+                    <version>${caffeine.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.artemis</groupId>
                     <artifactId>artemis-jakarta-client</artifactId>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
-                    <groupId>org.apache.activemq</groupId>
+                    <groupId>org.apache.artemis</groupId>
                     <artifactId>artemis-jakarta-server</artifactId>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
-                    <groupId>org.apache.activemq</groupId>
+                    <groupId>org.apache.artemis</groupId>
                     <artifactId>artemis-jakarta-ra</artifactId>
                     <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.activemq</groupId>
-                    <artifactId>artemis-core-client</artifactId>
-                    <scope>test</scope>
-                    <type>test-jar</type>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.activemq</groupId>
-                    <artifactId>artemis-commons</artifactId>
-                    <scope>test</scope>
-                    <type>test-jar</type>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.activemq</groupId>
-                    <artifactId>artemis-server</artifactId>
-                    <scope>test</scope>
-                    <type>test-jar</type>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>org.junit.jupiter</groupId>
@@ -524,6 +530,23 @@
                     <groupId>org.junit.jupiter</groupId>
                     <artifactId>junit-jupiter-engine</artifactId>
                     <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-launcher</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                    <version>${commons.lang.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.artemis.tests</groupId>
+                    <artifactId>integration-tests</artifactId>
+                    <scope>provided</scope>
+                    <type>test-jar</type>
                 </dependency>
             </dependencies>
         </profile>
@@ -541,7 +564,10 @@
         </profile>
     </profiles>
 
-  <scm>
-    <tag>artemis-wildfly-integration-2.0.4.Final</tag>
-  </scm>
+    <scm>
+        <connection>scm:git:git://github.com/rh-messaging/artemis-wildfly-integration.git</connection>
+        <developerConnection>scm:git:git@github.com:rh-messaging/artemis-wildfly-integration.git</developerConnection>
+        <url>https://github.com/rh-messaging/artemis-wildfly-integration</url>
+        <tag>artemis-wildfly-integration-2.0.6.Final</tag>
+    </scm>
 </project>
