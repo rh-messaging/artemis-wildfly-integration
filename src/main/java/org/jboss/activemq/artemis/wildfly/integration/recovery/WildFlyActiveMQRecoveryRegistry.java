@@ -18,6 +18,7 @@ package org.jboss.activemq.artemis.wildfly.integration.recovery;
 
 import java.util.Arrays;
 import javax.transaction.xa.XAResource;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -61,6 +62,13 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
     private final ConcurrentHashMap<String, WildFlyActiveMQXAResourceWrapper> recoveries = new ConcurrentHashMap<>();
 
     /**
+     * Recovery wrappers built directly from the registered connections, keyed by their configuration.
+     * Used as a fallback when no topology {@code nodeUp} has populated {@link #recoveries} (e.g. an
+     * in-vm or non-clustered connection whose broker never advertises a topology update).
+     */
+    private final ConcurrentHashMap<XARecoveryConfig, WildFlyActiveMQXAResourceWrapper> fallbackRecoveries = new ConcurrentHashMap<>();
+
+    /**
      * In case of failures, we retry on the next getXAResources
      */
     private final Set<WildFlyRecoveryDiscovery> failedDiscoverySet = new HashSet<WildFlyRecoveryDiscovery>();
@@ -78,28 +86,87 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
         try {
             checkFailures();
 
-            WildFlyActiveMQXAResourceWrapper[] resourceArray = new WildFlyActiveMQXAResourceWrapper[recoveries.size()];
             for (WildFlyActiveMQXAResourceWrapper resource : recoveries.values()) {
                 if (resource.isObsolete()) {
                     resource.update();
                 }
             }
-            resourceArray = recoveries.values().toArray(resourceArray);
+
+            // Topology nodeUp() is the primary source of recovery resources. However a connection
+            // whose broker never advertises a topology nodeUp (e.g. an in-vm or non-clustered
+            // connection) leaves 'recoveries' empty and would expose no XAResource at all, so its
+            // in-doubt branches could never be recovered. In that case fall back to recovery wrappers
+            // built from the connections registered directly by the resource adapter.
+            Collection<WildFlyActiveMQXAResourceWrapper> resources;
+            if (recoveries.isEmpty()) {
+                resources = fallbackRecoveryResources();
+            } else {
+                closeFallbackRecoveries();
+                resources = recoveries.values();
+            }
 
             if (WildFlyActiveMQLogger.LOGGER.isDebugEnabled()) {
                 WildFlyActiveMQLogger.LOGGER.debug("\n=======================================================================================");
                 WildFlyActiveMQLogger.LOGGER.debug("Returning the following list on getXAREsources:");
-                for (Map.Entry<String, WildFlyActiveMQXAResourceWrapper> entry : recoveries.entrySet()) {
-                    WildFlyActiveMQLogger.LOGGER.debug("server-id=" + entry.getKey() + ", value=" + entry.getValue());
+                if (!recoveries.isEmpty()) {
+                    for (Map.Entry<String, WildFlyActiveMQXAResourceWrapper> entry : recoveries.entrySet()) {
+                        WildFlyActiveMQLogger.LOGGER.debug("server-id=" + entry.getKey() + ", value=" + entry.getValue());
+                    }
+                } else {
+                    for (WildFlyActiveMQXAResourceWrapper wrapper : resources) {
+                        WildFlyActiveMQLogger.LOGGER.debug("value=" + wrapper);
+                    }
                 }
                 WildFlyActiveMQLogger.LOGGER.debug("=======================================================================================\n");
             }
 
-            return resourceArray;
+            return resources.toArray(new XAResource[0]);
         } catch (Throwable e) {
             WildFlyActiveMQLogger.LOGGER.warn(e.getMessage(), e);
             return new XAResource[]{};
         }
+    }
+
+    /**
+     * Fallback used when no topology {@code nodeUp} has populated {@link #recoveries}: builds (and
+     * caches) one recovery wrapper per directly-registered connection, from the connection's own
+     * transport configuration, so its in-doubt branches remain recoverable without a topology
+     * advertisement. Wrappers are cached in {@link #fallbackRecoveries} to avoid opening a fresh
+     * recovery connection on every scan, and dropped once their connection is no longer registered.
+     */
+    private Collection<WildFlyActiveMQXAResourceWrapper> fallbackRecoveryResources() {
+        for (XARecoveryConfig config : configSet.keySet()) {
+            fallbackRecoveries.computeIfAbsent(config, WildFlyActiveMQRecoveryRegistry::createRecoveryWrapper);
+        }
+        fallbackRecoveries.entrySet().removeIf(entry -> {
+            if (!configSet.containsKey(entry.getKey())) {
+                ((ActiveMQXAResourceWrapper) entry.getValue().getResource()).close();
+                return true;
+            }
+            return false;
+        });
+        return fallbackRecoveries.values();
+    }
+
+    private void closeFallbackRecoveries() {
+        if (!fallbackRecoveries.isEmpty()) {
+            for (WildFlyActiveMQXAResourceWrapper wrapper : fallbackRecoveries.values()) {
+                ((ActiveMQXAResourceWrapper) wrapper.getResource()).close();
+            }
+            fallbackRecoveries.clear();
+        }
+    }
+
+    private static WildFlyActiveMQXAResourceWrapper createRecoveryWrapper(XARecoveryConfig config) {
+        ActiveMQXAResourceWrapper xaResource = new ActiveMQXAResourceWrapper(config);
+        Map<String, String> configProperties = config.getProperties();
+        String jndiName = configProperties == null ? null : configProperties.get(XARecoveryConfig.JNDI_NAME_PROPERTY_KEY);
+        Map<String, Object> xaResourceProperties = new HashMap<>();
+        xaResourceProperties.put(org.apache.activemq.artemis.service.extensions.xa.ActiveMQXAResourceWrapper.ACTIVEMQ_JNDI_NAME, jndiName);
+        xaResourceProperties.put(org.apache.activemq.artemis.service.extensions.xa.ActiveMQXAResourceWrapper.ACTIVEMQ_NODE_ID, jndiName);
+        xaResourceProperties.put(org.apache.activemq.artemis.service.extensions.xa.ActiveMQXAResourceWrapper.ACTIVEMQ_PRODUCT_NAME, PRODUCT_NAME);
+        xaResourceProperties.put(org.apache.activemq.artemis.service.extensions.xa.ActiveMQXAResourceWrapper.ACTIVEMQ_PRODUCT_VERSION, VersionLoader.getVersion().getFullVersion());
+        return new WildFlyActiveMQXAResourceWrapper(xaResource, xaResourceProperties);
     }
 
     public static WildFlyActiveMQRecoveryRegistry getInstance() {
@@ -135,6 +202,10 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
             if (discoveryRecord != null) {
                 discoveryRecord.stop();
             }
+            WildFlyActiveMQXAResourceWrapper fallback = fallbackRecoveries.remove(resourceConfig);
+            if (fallback != null) {
+                ((ActiveMQXAResourceWrapper) fallback.getResource()).close();
+            }
         }
     }
 
@@ -149,7 +220,11 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
         for (WildFlyActiveMQXAResourceWrapper wrapper : recoveries.values()) {
             ((ActiveMQXAResourceWrapper) wrapper.getResource()).close();
         }
+        for (WildFlyActiveMQXAResourceWrapper wrapper : fallbackRecoveries.values()) {
+            ((ActiveMQXAResourceWrapper) wrapper.getResource()).close();
+        }
         recoveries.clear();
+        fallbackRecoveries.clear();
         configSet.clear();
     }
 
@@ -282,7 +357,7 @@ public class WildFlyActiveMQRecoveryRegistry implements XAResourceRecovery {
 
     @Override
     public String toString() {
-        return "WildFlyActiveMQRecoveryRegistry{" + "configSet=" + configSet + ", recoveries=" + recoveries + ", failedDiscoverySet=" + failedDiscoverySet + '}';
+        return "WildFlyActiveMQRecoveryRegistry{" + "configSet=" + configSet + ", recoveries=" + recoveries + ", fallbackRecoveries=" + fallbackRecoveries + ", failedDiscoverySet=" + failedDiscoverySet + '}';
     }
 
 }
