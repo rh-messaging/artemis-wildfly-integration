@@ -11,7 +11,7 @@
     <artifactId>artemis-wildfly-integration</artifactId>
     <packaging>jar</packaging>
     <name>ActiveMQ Artemis WildFly Integration</name>
-    <version>2.0.7.Final-SNAPSHOT</version>
+    <version>2.0.7.Final</version>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -568,6 +568,6 @@
         <connection>scm:git:git://github.com/rh-messaging/artemis-wildfly-integration.git</connection>
         <developerConnection>scm:git:git@github.com:rh-messaging/artemis-wildfly-integration.git</developerConnection>
         <url>https://github.com/rh-messaging/artemis-wildfly-integration</url>
-        <tag>artemis-wildfly-integration-2.0.6.Final</tag>
+        <tag>artemis-wildfly-integration-2.0.7.Final</tag>
     </scm>
 </project>
