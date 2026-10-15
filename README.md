@@ -34,4 +34,6 @@ Releasing
   mvn release:perform -DlocalCheckout=true -Pjboss-release -Darguments="-Drelease=true"
   git push origin main
   git push origin --tags
+  mvn nxrm3:staging-move -Dtag=artemis-wildfly-integration-2.0.7.Final -Dnexus.repository.release=releases -e -X
+
 ```
